@@ -4,7 +4,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); A = HERE + "/assets_free/"; G
 OUT = "/Users/dmitry/Desktop/Онлайн Продукты/Контент и сценарии/Карусель — Ты сильнее всех в нише (новый стиль)/"
 os.makedirs(OUT, exist_ok=True)
 FD = os.path.expanduser("~/.claude/skills/visual-design/assets/fonts")
-Y = (235, 224, 78); GRN = (70, 205, 120); WH = (245, 243, 238); BK = (20, 20, 18); GR = (150, 150, 146); DK = (60, 60, 58)
+Y = (235, 224, 78); GRN = (96, 136, 255); WH = (245, 243, 238); BK = (20, 20, 18); GR = (150, 150, 146); DK = (60, 60, 58)
 W, H = 1080, 1350; M = 100; TOP = 170          # безопасная зона: поля 100, сверху 170, снизу до ~1180, в углах ничего
 BEB = lambda s: ImageFont.truetype("/Users/dmitry/Library/Fonts/ofont.ru_Bebas Neue.ttf", s, layout_engine=ImageFont.Layout.BASIC)
 MB = lambda s: ImageFont.truetype(FD + "/Montserrat-Bold.ttf", s)
@@ -169,7 +169,7 @@ d.line([(split, y0 - 30), (split, y0 + 200)], fill=WH, width=6)
 rounded(im, (split - 78, y0 - 92, split + 78, y0 - 42), WH, radius=25); ImageDraw.Draw(im).text((split, y0 - 67), "ОПЛАТА", font=MB(26), fill=BK, anchor="mm")
 for ic, tx, cx in [("lucide_eye", "видит", M + 78), ("lucide_lightbulb", "понимает", M + 268), ("lucide_credit-card", "платит", M + 458)]:
     rounded(im, (cx - 80, y0 + 66, cx + 80, y0 + 190), (255, 255, 255), radius=26); icon(im, ic, cx, y0 + 108, 46, BK); ImageDraw.Draw(im).text((cx, y0 + 166), tx, font=MB(24), fill=BK, anchor="mm")
-rounded(im, (split + 40, y0 + 66, split + 232, y0 + 190), (255, 255, 255), radius=26, outline=GRN, width=6); icon(im, "lucide_hammer", split + 136, y0 + 108, 46, (30, 150, 90)); ImageDraw.Draw(im).text((split + 136, y0 + 166), "твой уровень", font=MB(22), fill=BK, anchor="mm")
+rounded(im, (split + 40, y0 + 66, split + 232, y0 + 190), (255, 255, 255), radius=26, outline=GRN, width=6); icon(im, "lucide_hammer", split + 136, y0 + 108, 46, (60, 96, 230)); ImageDraw.Draw(im).text((split + 136, y0 + 166), "твой уровень", font=MB(22), fill=BK, anchor="mm")
 d = ImageDraw.Draw(im); note(d, M + 268, y0 + 246, "здесь решают", 52, Y, "mm"); note(d, split + 180, y0 + 246, "здесь ценят", 52, GRN, "mm")
 takeaway(im, y0 + 312, "До оплаты клиент покупает ясность, а не твои дипломы.", 33); save(im, 5)
 
@@ -199,14 +199,17 @@ def box(im, cx, cy, s, label=None, handle=False, col=(196, 194, 188)):
     left = [(cx - s, cy - s // 2), (cx, cy), (cx, cy + s), (cx - s, cy + s // 2)]; right = [(cx + s, cy - s // 2), (cx, cy), (cx, cy + s), (cx + s, cy + s // 2)]
     d.polygon(left, fill=tuple(int(c * .78) for c in col)); d.polygon(right, fill=tuple(int(c * .6) for c in col)); d.polygon(top, fill=col)
     if label:
-        f = MB(21); tw = max(d.textlength(w_, font=f) for w_ in label.split()) + 28; th = 2 * 30 + 16
-        tag = Image.new("RGBA", (int(tw), th), (0, 0, 0, 0)); td = ImageDraw.Draw(tag); td.rounded_rectangle([0, 0, tag.width - 1, tag.height - 1], radius=10, fill=WH)
-        for k, w_ in enumerate(label.split()): td.text((tag.width // 2, 24 + k * 30), w_, font=f, fill=BK, anchor="mm")
-        tag = tag.rotate(6, expand=True, resample=Image.BICUBIC); im.paste(tag, (cx - s // 2 - tag.width // 2, cy + s // 4 - tag.height // 2), tag)
+        f = MB(19); ws = label.split(); tw = int(max(d.textlength(w_, font=f) for w_ in ws)) + 24; th = len(ws) * 26 + 14
+        tag = Image.new("RGBA", (tw, th + tw // 2 + 4), (0, 0, 0, 0)); td = ImageDraw.Draw(tag)
+        card = Image.new("RGBA", (tw, th), (0, 0, 0, 0)); cd = ImageDraw.Draw(card); cd.rounded_rectangle([0, 0, tw - 1, th - 1], radius=8, fill=WH)
+        for k, w_ in enumerate(ws): cd.text((tw // 2, 7 + 13 + k * 26), w_, font=f, fill=BK, anchor="mm")
+        tag.paste(card, (0, 0)); tag = tag.transform(tag.size, Image.AFFINE, (1, 0, 0, -0.5, 1, 0), Image.BICUBIC)   # наклон вдоль левой грани: вправо-вниз
+        bb = tag.getbbox(); tag = tag.crop(bb)
+        im.paste(tag, (cx - s // 2 - tag.width // 2, cy + s // 4 - tag.height // 2), tag)
 yb = y + 250
 box(im, M + 190, yb, 150, None, False); box(im, M + 600, yb, 150, "Разбор договора", True, (235, 224, 78))
 d = ImageDraw.Draw(im); note(d, M + 190, yb + 200, "сейчас", 54, (215, 214, 210), "mm"); note(d, M + 600, yb + 200, "как надо", 54, Y, "mm")
-hand_arrow(d, [(M + 372, yb + 70), (M + 420, yb + 70)], Y, 8, 20)
+hand_arrow(d, [(M + 372, yb + 70), (M + 408, yb + 70)], Y, 8, 20)
 takeaway(im, yb + 260, "Не доучивай продукт. Почини путь к нему.", 33); save(im, 7)
 
 # ---------------- 8. путь клиента ----------------
@@ -218,8 +221,9 @@ for i, txt in enumerate(["Одна фраза: кому помогаешь и к
     lines = wrap(dd, txt, MB(28), 720)
     for k, l in enumerate(lines): dd.text((M + 100, y0 + 50 - (len(lines) - 1) * 18 + k * 36), l, font=MB(28), fill=BK, anchor="lm")
     y0 += 116
-dd = ImageDraw.Draw(im); dd.ellipse([M, y0 + 8, M + 56, y0 + 64], fill=Y); dd.text((M + 28, y0 + 37), "3", font=BEB(44), fill=BK, anchor="mm"); dd.text((M + 76, y0 + 37), "Путь клиента:", font=MB(30), fill=WH, anchor="lm")
-ny = y0 + 90
+rounded(im, (M, y0, W - M, y0 + 100), (255, 255, 255), radius=26); dd = ImageDraw.Draw(im)
+dd.ellipse([M + 20, y0 + 22, M + 76, y0 + 78], fill=Y); dd.text((M + 48, y0 + 51), "3", font=BEB(44), fill=BK, anchor="mm"); dd.text((M + 100, y0 + 50), "Путь клиента:", font=MB(28), fill=BK, anchor="lm")
+ny = y0 + 124
 for i, (ic, cap) in enumerate([("simple-icons_instagram", "пост"), ("fluent-emoji_pushpin", "закреп: метод и цена"), ("simple-icons_telegram", "заявка в личку")]):
     cx = M + 100 + i * 340; rounded(im, (cx - 100, ny, cx + 100, ny + 200), (255, 255, 255), radius=30); dd = ImageDraw.Draw(im)
     lines = wrap(dd, cap, MB(24), 180); blk = 76 + 16 + len(lines) * 28; top = ny + (200 - blk) // 2
