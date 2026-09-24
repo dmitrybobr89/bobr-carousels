@@ -1,0 +1,6 @@
+*.key
+*token*
+*secret*
+config.json
+.env
+ключи/
