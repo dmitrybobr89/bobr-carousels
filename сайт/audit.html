@@ -76,13 +76,6 @@
     .step-text p { font-size: .85rem; color: var(--muted); line-height: 1.45; }
     @media (max-width: 480px) { .step-row { align-items: flex-start; } .step-badge { width: 56px; height: 56px; border-radius: 12px;} .step-badge svg{ width:20px; height:20px;} }
 
-    .time-selector-label { font-size: .92rem; font-weight: 700; margin-bottom: 12px; display: block; color: var(--ink); }
-    .pill-options-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 30px; }
-    @media (max-width: 640px) { .pill-options-grid { grid-template-columns: repeat(2,1fr); } }
-    .time-btn { background: #fff; border: 1.5px solid var(--line-strong); border-radius: var(--radius-sm); padding: 12px 8px; font-size: .88rem; font-weight: 700; color: var(--ink); text-align: center; cursor: pointer; box-shadow: 0 3px 8px rgba(22,33,46,0.10); transition: all .15s ease; user-select: none; }
-    .time-btn:hover { transform: translateY(-1px); }
-    .time-btn.active { background: linear-gradient(135deg, var(--navy-2), var(--navy-3)); border-color: var(--navy-3); color: #fff; box-shadow: 0 6px 16px rgba(22,33,46,0.30); }
-
     .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: linear-gradient(135deg, var(--navy-2), var(--navy-3)); color: #fff; border: none; border-radius: var(--radius-sm); padding: 16px 24px; font-size: 1rem; font-weight: 800; cursor: pointer; box-shadow: 0 10px 24px rgba(22,33,46,0.24); transition: transform .15s ease; }
     .btn-primary:hover { transform: translateY(-1px); }
     .btn-primary:active { transform: scale(0.98); }
@@ -139,6 +132,7 @@
 
     .stat-cards-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 28px; }
     @media (max-width: 640px) { .stat-cards-grid { grid-template-columns: 1fr; } }
+    .stat-cards-grid.stat-cards-single { grid-template-columns: 1fr; }
     .stat-card { background: #F9FAFC; border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 20px; }
     .stat-card-label { font-size: .78rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
     .stat-card-val { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 800; color: var(--bad-text); }
@@ -158,9 +152,10 @@
     .crit-bar-fill { height: 100%; background: var(--accent); border-radius: var(--radius-pill); transition: width .7s cubic-bezier(0.16,1,0.3,1); }
 
     .posts-summary-list h3 { font-size: 1.1rem; font-weight: 800; color: var(--ink); margin-bottom: 14px; }
-    .post-summary-card { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: #F9FAFC; border: 1.5px solid var(--line); border-radius: 12px; margin-bottom: 10px; }
+    .post-summary-card { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 18px; background: #F9FAFC; border: 1.5px solid var(--line); border-radius: 12px; margin-bottom: 10px; }
     .post-summary-info h5 { font-size: .92rem; font-weight: 800; color: var(--ink); }
     .post-summary-info p { font-size: .78rem; color: var(--muted); font-weight: 600; }
+    .post-summary-info .weak-note { font-size: .8rem; color: var(--bad-text); font-weight: 700; margin-top: 4px; }
     .post-summary-badge { font-family: 'JetBrains Mono', monospace; font-size: .8rem; font-weight: 800; padding: 5px 12px; border-radius: var(--radius-pill); white-space: nowrap; }
     .post-summary-badge.good { background: var(--good-bg); color: var(--good-text); border: 1.5px solid var(--good-line); }
     .post-summary-badge.medium { background: var(--mid-bg); color: var(--mid-text); border: 1.5px solid var(--mid-line); }
@@ -200,7 +195,7 @@
       <div id="screen-intro" class="fade-in">
         <span class="section-label">Инженерная диагностика</span>
         <h1 class="hero-title">Контент-Аудит</h1>
-        <p class="hero-subtitle">Экспресс-разбор 5 последних публикаций за 3 минуты. Покажет, где именно контент теряет управляемость, почему охваты не переходят в заявки и сколько часов работы уходит впустую.</p>
+        <p class="hero-subtitle">Экспресс-разбор 5 последних публикаций за 3 минуты. Покажет, где именно контент теряет управляемость, почему охваты не переходят в заявки и какие публикации нужно доработать в первую очередь.</p>
 
         <div class="steps-stack">
           <div class="step-row">
@@ -224,14 +219,6 @@
             </div>
             <div class="step-text"><h4>Точность: точка утечки</h4><p>В конце увидите, где именно ломается ваша система контента.</p></div>
           </div>
-        </div>
-
-        <span class="time-selector-label">Сколько в среднем у вас уходит на создание одной публикации?</span>
-        <div class="pill-options-grid" id="time-options">
-          <button class="time-btn" data-hours="0.5">30 минут</button>
-          <button class="time-btn active" data-hours="1.0">1 час</button>
-          <button class="time-btn" data-hours="2.0">2 часа</button>
-          <button class="time-btn" data-hours="3.5">3+ часа</button>
         </div>
 
         <button class="btn-primary" id="btn-start">
@@ -338,16 +325,11 @@
           <p class="result-disclaimer">Индекс и пороги — ориентир для самопроверки, не точная метрика.</p>
         </div>
 
-        <div class="stat-cards-grid">
+        <div class="stat-cards-grid stat-cards-single">
           <div class="stat-card">
             <div class="stat-card-label">Слабые публикации</div>
             <div class="stat-card-val" id="res-weak-count">0 / 5</div>
-            <div class="stat-card-sub">Набрали менее 4.5 из 10 баллов</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-card-label">Потрачено впустую</div>
-            <div class="stat-card-val" id="res-lost-hours">0 ч</div>
-            <div class="stat-card-sub" id="res-lost-hours-sub">Слабые публикации × время на пост</div>
+            <div class="stat-card-sub">Набрали менее 4.5 из 10 баллов — какие именно и что в них доработать, смотрите в разборе публикаций ниже</div>
           </div>
         </div>
 
@@ -396,7 +378,6 @@
 
   <script>
     const state = {
-      hoursPerPost: 1.0,
       currentStep: 1,
       posts: [
         { title: '', scores: [null,null,null,null,null] },
@@ -422,7 +403,6 @@
     const screenResults = document.getElementById('screen-results');
 
     const btnStart = document.getElementById('btn-start');
-    const timeButtons = document.querySelectorAll('#time-options .time-btn');
 
     const wizCurrStep = document.getElementById('wiz-curr-step');
     const wizCurrPct = document.getElementById('wiz-curr-pct');
@@ -440,25 +420,6 @@
       el.classList.add('show');
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
-    }
-
-    state.hoursLabel = '1 час';
-
-    timeButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        timeButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.hoursPerPost = parseFloat(btn.dataset.hours);
-        state.hoursLabel = btn.textContent.trim();
-      });
-    });
-
-    function pluralRu(n, one, few, many) {
-      const mod10 = n % 10, mod100 = n % 100;
-      if (mod100 >= 11 && mod100 <= 14) return many;
-      if (mod10 === 1) return one;
-      if (mod10 >= 2 && mod10 <= 4) return few;
-      return many;
     }
 
     btnStart.addEventListener('click', () => {
@@ -551,7 +512,6 @@
       const systemIndex = Math.round((grandTotal / 50) * 100);
 
       const weakPostsCount = postTotals.filter(score => score < 4.5).length;
-      const wastedHours = (weakPostsCount * state.hoursPerPost).toFixed(1).replace('.0', '');
 
       const criteriaSums = [0,0,0,0,0];
       state.posts.forEach(p => { p.scores.forEach((score, idx) => { criteriaSums[idx] += (score || 0); }); });
@@ -580,9 +540,6 @@
       }
 
       document.getElementById('res-weak-count').textContent = weakPostsCount + ' из 5';
-      document.getElementById('res-lost-hours').textContent = wastedHours + ' ч';
-      const weakWord = pluralRu(weakPostsCount, 'слабая публикация', 'слабые публикации', 'слабых публикаций');
-      document.getElementById('res-lost-hours-sub').textContent = weakPostsCount + ' ' + weakWord + ' × ' + state.hoursLabel + ' на пост';
       document.getElementById('res-leak-title').textContent = criteriaNames[minIdx] + ' (' + minPct + '%)';
       document.getElementById('res-leak-desc').textContent = leakDiagnostics[minIdx].desc;
 
@@ -600,12 +557,20 @@
         if (score < 4.5) { badgeClass = 'poor'; badgeText = score.toFixed(1) + ' / 10 · В трубу'; }
         else if (score < 7.0) { badgeClass = 'medium'; badgeText = score.toFixed(1) + ' / 10 · Требует усиления'; }
 
+        let weakNoteHtml = '';
+        if (score < 4.5) {
+          const minScore = Math.min(...p.scores);
+          const weakCriteria = p.scores.map((s, i) => s === minScore ? criteriaNames[i] : null).filter(Boolean);
+          weakNoteHtml = `<div class="weak-note">Доработать: ${weakCriteria.join(', ')}</div>`;
+        }
+
         const card = document.createElement('div');
         card.className = 'post-summary-card';
         card.innerHTML = `
           <div class="post-summary-info">
             <h5>#${idx + 1}. ${p.title}</h5>
             <p>Эффективность публикации</p>
+            ${weakNoteHtml}
           </div>
           <div class="post-summary-badge ${badgeClass}">${badgeText}</div>
         `;
@@ -624,10 +589,6 @@
         { title: '', scores: [null,null,null,null,null] },
         { title: '', scores: [null,null,null,null,null] }
       ];
-      document.querySelectorAll('#time-options .time-btn').forEach(b => b.classList.remove('active'));
-      document.querySelector('#time-options .time-btn[data-hours="1.0"]').classList.add('active');
-      state.hoursPerPost = 1.0;
-      state.hoursLabel = '1 час';
       screenResults.classList.add('hidden');
       screenIntro.classList.remove('hidden');
       screenIntro.classList.add('fade-in');
@@ -639,15 +600,21 @@
       const grandTotal = postTotals.reduce((sum, v) => sum + v, 0);
       const systemIndex = Math.round((grandTotal / 50) * 100);
       const weakPostsCount = postTotals.filter(s => s < 4.5).length;
-      const wastedHours = (weakPostsCount * state.hoursPerPost).toFixed(1).replace('.0', '');
 
       let text = '📊 РЕЗУЛЬТАТЫ КОНТЕНТ-АУДИТА\n';
       text += '━━━━━━━━━━━━━━━━━━━━━━\n';
       text += 'Индекс системности: ' + systemIndex + ' / 100\n';
-      text += 'Слабых публикаций: ' + weakPostsCount + ' из 5\n';
-      text += 'Потрачено впустую: ' + wastedHours + ' ч\n\n';
+      text += 'Слабых публикаций: ' + weakPostsCount + ' из 5\n\n';
       text += 'Разбор по публикациям:\n';
-      state.posts.forEach((p, idx) => { text += (idx + 1) + '. ' + p.title + ': ' + postTotals[idx].toFixed(1) + '/10\n'; });
+      state.posts.forEach((p, idx) => {
+        text += (idx + 1) + '. ' + p.title + ': ' + postTotals[idx].toFixed(1) + '/10';
+        if (postTotals[idx] < 4.5) {
+          const minScore = Math.min(...p.scores);
+          const weakCriteria = p.scores.map((s, i) => s === minScore ? criteriaNames[i] : null).filter(Boolean);
+          text += ' — доработать: ' + weakCriteria.join(', ');
+        }
+        text += '\n';
+      });
       text += '\nПройти аудит: Контент-Аудит · @infobiz_engineering';
       return text;
     }
