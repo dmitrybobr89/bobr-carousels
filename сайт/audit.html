@@ -221,6 +221,11 @@
           </div>
         </div>
 
+        <div class="form-group">
+          <label class="form-label" for="instagram-input">Ваш Instagram (необязательно)</label>
+          <input type="text" id="instagram-input" class="text-input" placeholder="@username — чтобы можно было написать вам по итогам">
+        </div>
+
         <button class="btn-primary" id="btn-start">
           <span>Начать диагностику</span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -377,8 +382,11 @@
   <div class="toast" id="toast"></div>
 
   <script>
+    const WEBHOOK_URL = 'https://n8n.169-58-165-201.sslip.io/webhook/kontent-audit';
+
     const state = {
       currentStep: 1,
+      instagram: '',
       posts: [
         { title: '', scores: [null,null,null,null,null] },
         { title: '', scores: [null,null,null,null,null] },
@@ -389,6 +397,11 @@
     };
 
     const criteriaNames = ['Задача контента','Связь с продуктом','Сильный смысл','Логика и путь','Результат'];
+
+    function weakCriteriaFor(scores) {
+      const minScore = Math.min(...scores);
+      return scores.map((s, i) => s === minScore ? criteriaNames[i] : null).filter(Boolean);
+    }
 
     const leakDiagnostics = [
       { title: 'Контент создаётся по инерции, без чёткой целевой роли', desc: 'Публикации выходят ради самого факта («нужно что-то выложить»). Без роли каждого поста в воронке действия превращаются в лотерею.' },
@@ -422,7 +435,10 @@
       toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
     }
 
+    const instagramInput = document.getElementById('instagram-input');
+
     btnStart.addEventListener('click', () => {
+      state.instagram = instagramInput.value.trim();
       screenIntro.classList.add('hidden');
       screenWizard.classList.remove('hidden');
       renderWizardStep(1);
@@ -559,9 +575,7 @@
 
         let weakNoteHtml = '';
         if (score < 4.5) {
-          const minScore = Math.min(...p.scores);
-          const weakCriteria = p.scores.map((s, i) => s === minScore ? criteriaNames[i] : null).filter(Boolean);
-          weakNoteHtml = `<div class="weak-note">Доработать: ${weakCriteria.join(', ')}</div>`;
+          weakNoteHtml = `<div class="weak-note">Доработать: ${weakCriteriaFor(p.scores).join(', ')}</div>`;
         }
 
         const card = document.createElement('div');
@@ -577,11 +591,34 @@
         container.appendChild(card);
       });
 
+      sendResultsWebhook({
+        instagram: state.instagram || null,
+        systemIndex,
+        statusTitle: statusTitle.textContent,
+        weakPostsCount,
+        mainLeak: { criterion: criteriaNames[minIdx], percent: minPct },
+        criteriaPercents: criteriaNames.reduce((acc, name, i) => { acc[name] = criteriaPcts[i]; return acc; }, {}),
+        weakPosts: state.posts
+          .map((p, idx) => ({ title: p.title, score: postTotals[idx], weakCriteria: weakCriteriaFor(p.scores) }))
+          .filter((p, idx) => postTotals[idx] < 4.5),
+        submittedAt: new Date().toISOString()
+      });
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function sendResultsWebhook(payload) {
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source: 'Контент-Аудит', ...payload })
+      }).catch(err => console.warn('Не удалось отправить результат на вебхук:', err));
     }
 
     document.getElementById('btn-restart').addEventListener('click', () => {
       state.currentStep = 1;
+      state.instagram = '';
+      instagramInput.value = '';
       state.posts = [
         { title: '', scores: [null,null,null,null,null] },
         { title: '', scores: [null,null,null,null,null] },
@@ -609,9 +646,7 @@
       state.posts.forEach((p, idx) => {
         text += (idx + 1) + '. ' + p.title + ': ' + postTotals[idx].toFixed(1) + '/10';
         if (postTotals[idx] < 4.5) {
-          const minScore = Math.min(...p.scores);
-          const weakCriteria = p.scores.map((s, i) => s === minScore ? criteriaNames[i] : null).filter(Boolean);
-          text += ' — доработать: ' + weakCriteria.join(', ');
+          text += ' — доработать: ' + weakCriteriaFor(p.scores).join(', ');
         }
         text += '\n';
       });
