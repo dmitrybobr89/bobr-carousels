@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Контент-Аудит | Экспресс-разбор 5 публикаций</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink:#12151A;
+      --muted:#5C636E;
+      --navy-1:#5B84A8;
+      --navy-2:#33506B;
+      --navy-3:#16212E;
+      --surface:#FFFFFF;
+      --bg:#F3F5F8;
+      --line:#E4E8EE;
+      --line-strong:#C7D0DC;
+
+      --accent:#1FA898;
+      --accent-text:#0F8377;
+
+      --good-bg:#E8F7ED; --good-text:#166534; --good-line:#A7F3D0;
+      --mid-bg:#FDF1DA; --mid-text:#9C6B08; --mid-line:#F0DBA0;
+      --bad-bg:#F2ECEC; --bad-text:#6B2E2E; --bad-line:#D9C4C4;
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --radius-pill: 9999px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container { width: 100%; max-width: 760px; margin: 0 auto; padding: 36px 20px 64px; flex: 1; }
+
+    .header-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+
+    .brand-tag { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: #fff; border: 1.5px solid var(--line); border-radius: var(--radius-pill); font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--navy-2); }
+    .brand-tag .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+    .meta-tag { font-size: .72rem; font-weight: 700; color: var(--muted); background: #fff; padding: 8px 14px; border-radius: var(--radius-pill); border: 1.5px solid var(--line); }
+
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: 0 18px 50px rgba(20,22,26,0.06); padding: 44px 40px; position: relative; }
+    @media (max-width: 640px) { .card { padding: 26px 20px; border-radius: var(--radius-md); } }
+
+    .fade-in { animation: fadeSlideUp 0.28s cubic-bezier(0.16,1,0.3,1) forwards; }
+    @keyframes fadeSlideUp { from { opacity:0; transform:translateY(8px);} to { opacity:1; transform:translateY(0);} }
+
+    .section-label { font-size: .75rem; text-transform: uppercase; letter-spacing: .12em; color: var(--navy-2); font-weight: 700; margin-bottom: 12px; display: block; }
+    .hero-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); line-height: 1.08; margin-bottom: 16px; }
+    .hero-subtitle { font-size: 1rem; color: var(--muted); margin-bottom: 34px; line-height: 1.6; max-width: 580px; }
+
+    /* Intro steps */
+    .steps-stack { display: flex; flex-direction: column; gap: 12px; margin-bottom: 34px; }
+    .step-row { display: flex; align-items: center; gap: 18px; }
+    .step-badge { width: 76px; height: 76px; border-radius: 16px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; box-shadow: 0 8px 18px rgba(20,40,60,0.18); }
+    .step-badge svg { width: 26px; height: 26px; margin-bottom: 4px; }
+    .step-badge .num { font-size: .68rem; font-weight: 800; letter-spacing: .04em; }
+    .step-row:nth-child(1) .step-badge { background: linear-gradient(135deg, var(--navy-1), #7CA0BE); }
+    .step-row:nth-child(2) .step-badge { background: linear-gradient(135deg, var(--navy-2), var(--navy-1)); }
+    .step-row:nth-child(3) .step-badge { background: linear-gradient(135deg, var(--navy-3), var(--navy-2)); }
+    .step-text h4 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; color: var(--ink); }
+    .step-text p { font-size: .85rem; color: var(--muted); line-height: 1.45; }
+    @media (max-width: 480px) { .step-row { align-items: flex-start; } .step-badge { width: 56px; height: 56px; border-radius: 12px;} .step-badge svg{ width:20px; height:20px;} }
+
+    .time-selector-label { font-size: .92rem; font-weight: 700; margin-bottom: 12px; display: block; color: var(--ink); }
+    .pill-options-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 30px; }
+    @media (max-width: 640px) { .pill-options-grid { grid-template-columns: repeat(2,1fr); } }
+    .time-btn { background: #fff; border: 1.5px solid var(--line-strong); border-radius: var(--radius-sm); padding: 12px 8px; font-size: .88rem; font-weight: 700; color: var(--ink); text-align: center; cursor: pointer; box-shadow: 0 3px 8px rgba(22,33,46,0.10); transition: all .15s ease; user-select: none; }
+    .time-btn:hover { transform: translateY(-1px); }
+    .time-btn.active { background: linear-gradient(135deg, var(--navy-2), var(--navy-3)); border-color: var(--navy-3); color: #fff; box-shadow: 0 6px 16px rgba(22,33,46,0.30); }
+
+    .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: linear-gradient(135deg, var(--navy-2), var(--navy-3)); color: #fff; border: none; border-radius: var(--radius-sm); padding: 16px 24px; font-size: 1rem; font-weight: 800; cursor: pointer; box-shadow: 0 10px 24px rgba(22,33,46,0.24); transition: transform .15s ease; }
+    .btn-primary:hover { transform: translateY(-1px); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    .btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #fff; color: var(--muted); border: 1.5px solid var(--line-strong); border-radius: var(--radius-sm); padding: 14px 20px; font-size: .92rem; font-weight: 700; cursor: pointer; }
+    .btn-secondary:hover { color: var(--ink); border-color: var(--navy-1); }
+
+    .footer-note { text-align: center; margin-top: 36px; font-size: .82rem; color: var(--muted); }
+    .footer-note a { color: var(--navy-2); text-decoration: none; font-weight: 700; }
+    .footer-note a:hover { text-decoration: underline; }
+
+    /* Wizard */
+    .progress-wrapper { margin-bottom: 28px; }
+    .progress-meta { display: flex; justify-content: space-between; font-size: .86rem; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+    .progress-meta .num { color: var(--navy-2); font-weight: 800; }
+    .progress-track { width: 100%; height: 8px; background: #EEF1F5; border: 1px solid var(--line); border-radius: var(--radius-pill); overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--navy-1), var(--navy-3)); border-radius: var(--radius-pill); transition: width .4s cubic-bezier(0.34,1.3,0.64,1); }
+
+    .step-header { margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1.5px solid var(--line); display: flex; align-items: center; gap: 12px; }
+    .post-badge { background: linear-gradient(135deg, var(--navy-2), var(--navy-3)); color: #fff; font-size: .8rem; font-weight: 800; padding: 6px 14px; border-radius: var(--radius-pill); }
+    .step-header h2 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--ink); }
+
+    .form-group { margin-bottom: 24px; }
+    .form-label { display: block; font-size: .88rem; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+    .text-input { width: 100%; padding: 13px 16px; font-family: inherit; font-size: .95rem; border: 1.5px solid var(--line-strong); border-radius: var(--radius-sm); background: #F7F9FB; color: var(--ink); transition: all .15s; }
+    .text-input:focus { outline: none; background: #fff; border-color: var(--navy-1); box-shadow: 0 0 0 3px rgba(91,132,168,0.18); }
+
+    .criterion-card { background: #F9FAFC; border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 20px; margin-bottom: 16px; transition: all .15s ease; }
+    .criterion-card.is-answered { border-color: var(--navy-1); background: #fff; }
+    .criterion-title { font-size: 1.02rem; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
+    .criterion-q { font-size: .95rem; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+    .criterion-help { font-size: .85rem; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+
+    .answers-row { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+    @media (max-width: 480px) { .answers-row { grid-template-columns: 1fr; gap: 8px; } }
+    .answer-btn { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1.5px solid var(--line-strong); border-radius: var(--radius-sm); padding: 13px 16px; font-size: .88rem; font-weight: 700; color: var(--ink); cursor: pointer; text-align: left; box-shadow: 0 2px 6px rgba(20,30,45,0.06); transition: all .15s ease; user-select: none; }
+    .answer-btn:hover { border-color: var(--navy-1); transform: translateY(-1px); }
+    .answer-btn .btn-indicator { width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--line-strong); margin-left: 8px; flex-shrink: 0; }
+    .answer-btn.selected { background: linear-gradient(135deg, var(--navy-2), var(--navy-3)); border-color: var(--navy-3); color: #fff; box-shadow: 0 6px 16px rgba(22,33,46,0.28); }
+    .answer-btn.selected .btn-indicator { border-color: #fff; background: #fff; }
+
+    .actions-bar { display: flex; gap: 12px; margin-top: 28px; }
+    .actions-bar .btn-primary { flex: 1; }
+
+    /* Results */
+    .result-hero { text-align: center; padding-bottom: 28px; border-bottom: 1.5px solid var(--line); margin-bottom: 28px; }
+    .result-score-circle { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 140px; height: 140px; border-radius: 50%; background: #fff; border: 5px solid var(--accent); margin-bottom: 16px; box-shadow: 0 10px 26px rgba(20,22,26,0.1); }
+    .result-score-val { font-family: 'JetBrains Mono', monospace; font-size: 2.7rem; font-weight: 800; color: var(--accent-text); line-height: 1; }
+    .result-score-max { font-size: .76rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 4px; }
+    .result-status-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--ink); margin-bottom: 8px; }
+    .result-status-desc { font-size: .95rem; color: var(--muted); max-width: 540px; margin: 0 auto; line-height: 1.55; }
+    .result-disclaimer { font-size: .76rem; color: #9AA1AB; margin-top: 10px; }
+
+    .stat-cards-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 28px; }
+    @media (max-width: 640px) { .stat-cards-grid { grid-template-columns: 1fr; } }
+    .stat-card { background: #F9FAFC; border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 20px; }
+    .stat-card-label { font-size: .78rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+    .stat-card-val { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 800; color: var(--bad-text); }
+    .stat-card-sub { font-size: .78rem; color: var(--muted); margin-top: 4px; }
+
+    .leak-box { background: #fff; border: 1.5px solid var(--line-strong); border-left: 6px solid var(--accent); border-radius: 14px; padding: 22px 24px; margin-bottom: 28px; }
+    .leak-badge { display: inline-block; font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: var(--accent-text); background: rgba(31,168,152,0.14); padding: 4px 12px; border-radius: var(--radius-pill); margin-bottom: 10px; }
+    .leak-title { font-size: 1.1rem; font-weight: 800; color: var(--ink); margin-bottom: 8px; }
+    .leak-desc { font-size: .9rem; color: var(--muted); line-height: 1.5; }
+
+    .criteria-breakdown { margin-bottom: 30px; }
+    .criteria-breakdown h3 { font-size: 1.1rem; font-weight: 800; color: var(--ink); margin-bottom: 16px; }
+    .crit-bar-row { margin-bottom: 14px; }
+    .crit-bar-meta { display: flex; justify-content: space-between; font-size: .85rem; font-weight: 700; margin-bottom: 6px; }
+    .crit-bar-meta span.score { font-family: 'JetBrains Mono', monospace; color: var(--accent-text); font-weight: 800; }
+    .crit-bar-track { width: 100%; height: 8px; background: #EEF1F5; border: 1px solid var(--line); border-radius: var(--radius-pill); overflow: hidden; }
+    .crit-bar-fill { height: 100%; background: var(--accent); border-radius: var(--radius-pill); transition: width .7s cubic-bezier(0.16,1,0.3,1); }
+
+    .posts-summary-list h3 { font-size: 1.1rem; font-weight: 800; color: var(--ink); margin-bottom: 14px; }
+    .post-summary-card { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: #F9FAFC; border: 1.5px solid var(--line); border-radius: 12px; margin-bottom: 10px; }
+    .post-summary-info h5 { font-size: .92rem; font-weight: 800; color: var(--ink); }
+    .post-summary-info p { font-size: .78rem; color: var(--muted); font-weight: 600; }
+    .post-summary-badge { font-family: 'JetBrains Mono', monospace; font-size: .8rem; font-weight: 800; padding: 5px 12px; border-radius: var(--radius-pill); white-space: nowrap; }
+    .post-summary-badge.good { background: var(--good-bg); color: var(--good-text); border: 1.5px solid var(--good-line); }
+    .post-summary-badge.medium { background: var(--mid-bg); color: var(--mid-text); border: 1.5px solid var(--mid-line); }
+    .post-summary-badge.poor { background: var(--bad-bg); color: var(--bad-text); border: 1.5px solid var(--bad-line); }
+
+    .bridge-card { background: #F9FAFC; border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 28px; text-align: center; margin-bottom: 24px; margin-top: 8px; }
+    .bridge-card h4 { font-size: 1.15rem; font-weight: 800; color: var(--ink); margin-bottom: 8px; }
+    .bridge-card p { font-size: .9rem; color: var(--muted); margin-bottom: 20px; line-height: 1.55; }
+
+    .result-buttons { display: flex; flex-direction: column; gap: 12px; }
+
+    .hidden { display: none !important; }
+
+    /* Toast (замена alert) */
+    .toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 12px); background: var(--navy-3); color: #fff; padding: 13px 22px; border-radius: var(--radius-sm); font-size: .9rem; font-weight: 700; box-shadow: 0 12px 30px rgba(0,0,0,0.25); opacity: 0; pointer-events: none; transition: all .25s ease; z-index: 50; text-align:center; max-width: 90vw; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media print {
+      body { background: #fff; }
+      .header-bar, .btn-secondary, .result-buttons, .bridge-card, #btn-restart, #btn-copy-result, #btn-download-pdf { display: none !important; }
+      .card { box-shadow: none; border: none; padding: 0; }
+      .container { padding: 0; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header-bar">
+      <div class="brand-tag"><span class="dot"></span><span>Инфобиз-инжиниринг</span></div>
+      <div class="meta-tag">5 публикаций · 3 мин</div>
+    </div>
+
+    <div class="card" id="main-card">
+
+      <!-- SCREEN 0: INTRO -->
+      <div id="screen-intro" class="fade-in">
+        <span class="section-label">Инженерная диагностика</span>
+        <h1 class="hero-title">Контент-Аудит</h1>
+        <p class="hero-subtitle">Экспресс-разбор 5 последних публикаций за 3 минуты. Покажет, где именно контент теряет управляемость, почему охваты не переходят в заявки и сколько часов работы уходит впустую.</p>
+
+        <div class="steps-stack">
+          <div class="step-row">
+            <div class="step-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+              <span class="num">01</span>
+            </div>
+            <div class="step-text"><h4>Выборка: 5 последних постов</h4><p>Возьмите 5 последних публикаций: посты, Reels, видео — любые ваши основные форматы.</p></div>
+          </div>
+          <div class="step-row">
+            <div class="step-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span class="num">02</span>
+            </div>
+            <div class="step-text"><h4>Честность: без идеализации</h4><p>Не старайтесь дать «правильный» ответ — оцените публикацию такой, какой она вышла на самом деле.</p></div>
+          </div>
+          <div class="step-row">
+            <div class="step-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+              <span class="num">03</span>
+            </div>
+            <div class="step-text"><h4>Точность: точка утечки</h4><p>В конце увидите, где именно ломается ваша система контента.</p></div>
+          </div>
+        </div>
+
+        <span class="time-selector-label">Сколько в среднем у вас уходит на создание одной публикации?</span>
+        <div class="pill-options-grid" id="time-options">
+          <button class="time-btn" data-hours="0.5">30 минут</button>
+          <button class="time-btn active" data-hours="1.0">1 час</button>
+          <button class="time-btn" data-hours="2.0">2 часа</button>
+          <button class="time-btn" data-hours="3.5">3+ часа</button>
+        </div>
+
+        <button class="btn-primary" id="btn-start">
+          <span>Начать диагностику</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+
+      <!-- SCREEN 1-5: WIZARD -->
+      <div id="screen-wizard" class="hidden">
+        <div class="progress-wrapper">
+          <div class="progress-meta">
+            <span>Оценка публикации: <span class="num" id="wiz-curr-step">1</span> из 5</span>
+            <span class="num" id="wiz-curr-pct">20%</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="wiz-progress-fill" style="width: 20%;"></div></div>
+        </div>
+
+        <div class="step-header">
+          <span class="post-badge" id="wiz-badge">Пост #1</span>
+          <h2 id="wiz-title-text">Оценка публикации</h2>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="post-title-input">Тема или формат публикации (для себя):</label>
+          <input type="text" id="post-title-input" class="text-input" placeholder="Например: Reels про ошибки в воронках, пост про оффер...">
+        </div>
+
+        <div class="criterion-card" data-crit="0">
+          <div class="criterion-title">1. Задача контента</div>
+          <div class="criterion-q">У этой публикации была конкретная задача?</div>
+          <div class="criterion-help">Привлечь внимание, усилить доверие, прогреть, получить заявку или привести к продаже.</div>
+          <div class="answers-row">
+            <button class="answer-btn" data-score="2.0"><span>Да, точно</span><span class="btn-indicator"></span></button>
+            <button class="answer-btn" data-score="1.5"><span>Скорее да</span><span class="btn-indicator"></span></button>
+            <button class="answer-btn" data-score="0.5"><span>Скорее нет</span><span class="btn-indicator"></span></button>
+            <button class="answer-btn" data-score="0.0"><span>Нет</span><span class="btn-indicator"></span></button>
+          </div>
+        </div>
+
+        <div class="criterion-card" data-crit="1">
+          <div class="criterion-title">2. Связь с продуктом</div>
+          <div class="criterion-q">Она была связана с тем, что вы продаёте?</div>
+          <div class="criterion-help">Не обязательно в лоб, но раскрывает экспертность, проблему или продукт.</div>
+          <div class="answers-row">
+            <button class="answer-btn" data-score="2.0"><span>Да, точно</span><span class="btn-indicator"></span></button>
+            <button class="answer-btn" data-score="1.5"><span>Скорее да</span><span class="btn-indicator"></span></button>
+            <button class="answer-btn" data-score="0.5"><span>Скорее нет</span><span class="btn-indicator"></span></button>
+            <button class="answer-btn" data-score="0.0"><span>Нет</span><span class="btn-indicator"></span></button>
+          </div>
+        </div>
+
+        <div class="criterion-card" data-crit="2">
+          <div class="criterion-title">3. Сильный смысл</div>
+          <div class="criterion-q">В публикации была одна понятная мысль, которую унёс человек?</div>
+          <div class="criterion-help">Не каша советов, а один твёрдый законченный вывод.</div>
+          <div class="answers-row">
+            <button class="answer-btn" data-score="2.0"><span>Да, точно</span><span class="btn-indicator"></span></button>
+            <button class="answer-btn" data-score="1.5"><span>Скорее да</span><span class="btn-indicator"></span></button>
+            <button class="answer-btn" data-score="0.5"><span>Скорее нет</span><span class="btn-indicator"></span></button>
+            <button class="answer-btn" data-score="0.0"><span>Нет</span><span class="btn-indicator"></span></button>
+          </div>
+        </div>
+
+        <div class="criterion-card" data-crit="3">
+          <div class="criterion-title">4. Логика и путь</div>
+          <div class="criterion-q">Эта публикация была частью общей логики контента?</div>
+          <div class="criterion-help">Продолжала предыдущие темы или вела к следующему шагу, а не висела сама по себе.</div>
+          <div class="answers-row">
+            <button class="answer-btn" data-score="2.0"><span>Да, точно</span><span class="btn-indicator"></span></button>
+            <button class="answer-btn" data-score="1.5"><span>Скорее да</span><span class="btn-indicator"></span></button>
+            <button class="answer-btn" data-score="0.5"><span>Скорее нет</span><span class="btn-indicator"></span></button>
+            <button class="answer-btn" data-score="0.0"><span>Нет</span><span class="btn-indicator"></span></button>
+          </div>
+        </div>
+
+        <div class="criterion-card" data-crit="4">
+          <div class="criterion-title">5. Результат</div>
+          <div class="criterion-q">Вы можете назвать результат, который она дала?</div>
+          <div class="criterion-help">Сохранения, переходы, вопросы в Direct, заявки или продажи.</div>
+          <div class="answers-row">
+            <button class="answer-btn" data-score="2.0"><span>Да, точно</span><span class="btn-indicator"></span></button>
+            <button class="answer-btn" data-score="1.5"><span>Скорее да</span><span class="btn-indicator"></span></button>
+            <button class="answer-btn" data-score="0.5"><span>Скорее нет</span><span class="btn-indicator"></span></button>
+            <button class="answer-btn" data-score="0.0"><span>Нет</span><span class="btn-indicator"></span></button>
+          </div>
+        </div>
+
+        <div class="actions-bar">
+          <button class="btn-secondary" id="btn-prev-step">← Назад</button>
+          <button class="btn-primary" id="btn-next-step"><span id="btn-next-text">К публикации #2 →</span></button>
+        </div>
+      </div>
+
+      <!-- SCREEN 6: RESULTS -->
+      <div id="screen-results" class="hidden">
+        <div class="result-hero">
+          <div class="result-score-circle">
+            <span class="result-score-val" id="res-index-val">0</span>
+            <span class="result-score-max">из 100</span>
+          </div>
+          <h2 class="result-status-title" id="res-status-title">Расчёт...</h2>
+          <p class="result-status-desc" id="res-status-desc">Описание...</p>
+          <p class="result-disclaimer">Индекс и пороги — ориентир для самопроверки, не точная метрика.</p>
+        </div>
+
+        <div class="stat-cards-grid">
+          <div class="stat-card">
+            <div class="stat-card-label">Слабые публикации</div>
+            <div class="stat-card-val" id="res-weak-count">0 / 5</div>
+            <div class="stat-card-sub">Набрали менее 4.5 из 10 баллов</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Потрачено впустую</div>
+            <div class="stat-card-val" id="res-lost-hours">0 ч</div>
+            <div class="stat-card-sub">Время на производство слабого контента</div>
+          </div>
+        </div>
+
+        <div class="leak-box">
+          <span class="leak-badge">Главная точка утечки</span>
+          <h3 class="leak-title" id="res-leak-title">Загрузка...</h3>
+          <p class="leak-desc" id="res-leak-desc">Анализ уязвимости системы контента...</p>
+        </div>
+
+        <div class="criteria-breakdown">
+          <h3>Показатели по 5 критериям</h3>
+          <div class="crit-bar-row"><div class="crit-bar-meta"><span class="name">1. Задача контента</span><span class="score" id="crit-val-0">0%</span></div><div class="crit-bar-track"><div class="crit-bar-fill" id="crit-bar-0" style="width:0%;"></div></div></div>
+          <div class="crit-bar-row"><div class="crit-bar-meta"><span class="name">2. Связь с продуктом</span><span class="score" id="crit-val-1">0%</span></div><div class="crit-bar-track"><div class="crit-bar-fill" id="crit-bar-1" style="width:0%;"></div></div></div>
+          <div class="crit-bar-row"><div class="crit-bar-meta"><span class="name">3. Сильный смысл</span><span class="score" id="crit-val-2">0%</span></div><div class="crit-bar-track"><div class="crit-bar-fill" id="crit-bar-2" style="width:0%;"></div></div></div>
+          <div class="crit-bar-row"><div class="crit-bar-meta"><span class="name">4. Логика и путь</span><span class="score" id="crit-val-3">0%</span></div><div class="crit-bar-track"><div class="crit-bar-fill" id="crit-bar-3" style="width:0%;"></div></div></div>
+          <div class="crit-bar-row"><div class="crit-bar-meta"><span class="name">5. Результат</span><span class="score" id="crit-val-4">0%</span></div><div class="crit-bar-track"><div class="crit-bar-fill" id="crit-bar-4" style="width:0%;"></div></div></div>
+        </div>
+
+        <div class="posts-summary-list">
+          <h3>Оценка публикаций</h3>
+          <div id="posts-cards-container"></div>
+        </div>
+
+        <div class="bridge-card">
+          <h4>Как устранить выявленные утечки?</h4>
+          <p>Переходите в Telegram-канал «Инфобиз-инжиниринг» — там разбор системного подхода к контенту без хаоса и выгорания.</p>
+          <a href="https://t.me/infobiz_engineering" target="_blank" class="btn-primary" style="text-decoration:none;">
+            <span>Перейти в Telegram-канал</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <div class="result-buttons">
+          <button class="btn-secondary" id="btn-download-pdf"><span>⬇ Скачать результат в PDF</span></button>
+          <button class="btn-secondary" id="btn-copy-result"><span>📋 Скопировать отчёт в буфер</span></button>
+          <button class="btn-secondary" id="btn-restart"><span>🔄 Пройти заново</span></button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-note">Контент-Аудит © 2026 · Дмитрий Бобр · <a href="https://t.me/infobiz_engineering" target="_blank">@infobiz_engineering</a></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const state = {
+      hoursPerPost: 1.0,
+      currentStep: 1,
+      posts: [
+        { title: '', scores: [null,null,null,null,null] },
+        { title: '', scores: [null,null,null,null,null] },
+        { title: '', scores: [null,null,null,null,null] },
+        { title: '', scores: [null,null,null,null,null] },
+        { title: '', scores: [null,null,null,null,null] }
+      ]
+    };
+
+    const criteriaNames = ['Задача контента','Связь с продуктом','Сильный смысл','Логика и путь','Результат'];
+
+    const leakDiagnostics = [
+      { title: 'Контент создаётся по инерции, без чёткой целевой роли', desc: 'Публикации выходят ради самого факта («нужно что-то выложить»). Без роли каждого поста в воронке действия превращаются в лотерею.' },
+      { title: 'Контент оторван от продуктов и монетизации', desc: 'Охваты могут быть, но они не ведут к покупкам. Читатели потребляют материалы как бесплатные советы, не понимая ценности платного решения.' },
+      { title: 'Размытые смыслы и информационный шум', desc: 'В публикациях даётся слишком много мыслей или общих фраз. Читатель не может сформулировать одной фразой, какой вывод он унёс.' },
+      { title: 'Разрыв пользовательского пути (нет мостика)', desc: 'Публикации живут как изолированные острова. Человек посмотрел материал, но не понимает, куда идти дальше — нет навигации в воронку.' },
+      { title: 'Отсутствие фиксации измеримого результата', desc: 'Вы тратите часы на производство, но не замыкаете цикл аналитикой и конверсией. Публикации не аккумулируют активы (сохранения, заявки, переходы).' }
+    ];
+
+    const screenIntro = document.getElementById('screen-intro');
+    const screenWizard = document.getElementById('screen-wizard');
+    const screenResults = document.getElementById('screen-results');
+
+    const btnStart = document.getElementById('btn-start');
+    const timeButtons = document.querySelectorAll('#time-options .time-btn');
+
+    const wizCurrStep = document.getElementById('wiz-curr-step');
+    const wizCurrPct = document.getElementById('wiz-curr-pct');
+    const wizProgressFill = document.getElementById('wiz-progress-fill');
+    const wizBadge = document.getElementById('wiz-badge');
+    const postTitleInput = document.getElementById('post-title-input');
+    const btnPrevStep = document.getElementById('btn-prev-step');
+    const btnNextStep = document.getElementById('btn-next-step');
+    const btnNextText = document.getElementById('btn-next-text');
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+    }
+
+    timeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        timeButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.hoursPerPost = parseFloat(btn.dataset.hours);
+      });
+    });
+
+    btnStart.addEventListener('click', () => {
+      screenIntro.classList.add('hidden');
+      screenWizard.classList.remove('hidden');
+      renderWizardStep(1);
+    });
+
+    document.querySelectorAll('.criterion-card').forEach(card => {
+      const critIdx = parseInt(card.dataset.crit);
+      const btns = card.querySelectorAll('.answer-btn');
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          btns.forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          card.classList.add('is-answered');
+          const score = parseFloat(btn.dataset.score);
+          state.posts[state.currentStep - 1].scores[critIdx] = score;
+        });
+      });
+    });
+
+    function renderWizardStep(step) {
+      state.currentStep = step;
+      wizCurrStep.textContent = step;
+      const pct = step * 20;
+      wizCurrPct.textContent = pct + '%';
+      wizProgressFill.style.width = pct + '%';
+      wizBadge.textContent = 'Пост #' + step;
+
+      screenWizard.classList.remove('fade-in');
+      void screenWizard.offsetWidth;
+      screenWizard.classList.add('fade-in');
+
+      const currentPost = state.posts[step - 1];
+      postTitleInput.value = currentPost.title || '';
+
+      document.querySelectorAll('.criterion-card').forEach(card => {
+        const critIdx = parseInt(card.dataset.crit);
+        const btns = card.querySelectorAll('.answer-btn');
+        btns.forEach(b => b.classList.remove('selected'));
+        const savedScore = currentPost.scores[critIdx];
+        if (savedScore !== null) {
+          card.classList.add('is-answered');
+          btns.forEach(b => { if (parseFloat(b.dataset.score) === savedScore) b.classList.add('selected'); });
+        } else {
+          card.classList.remove('is-answered');
+        }
+      });
+
+      btnPrevStep.classList.toggle('hidden', step === 1);
+      btnNextText.textContent = step === 5 ? 'Получить результат аудита →' : 'К публикации #' + (step + 1) + ' →';
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    btnPrevStep.addEventListener('click', () => {
+      saveCurrentStepData();
+      if (state.currentStep > 1) renderWizardStep(state.currentStep - 1);
+    });
+
+    btnNextStep.addEventListener('click', () => {
+      saveCurrentStepData();
+      const currentScores = state.posts[state.currentStep - 1].scores;
+      const unanswered = currentScores.findIndex(s => s === null);
+      if (unanswered !== -1) {
+        showToast('Ответьте на все 5 вопросов для этой публикации.');
+        return;
+      }
+      if (state.currentStep < 5) {
+        renderWizardStep(state.currentStep + 1);
+      } else {
+        calculateAndShowResults();
+      }
+    });
+
+    function saveCurrentStepData() {
+      const idx = state.currentStep - 1;
+      const val = postTitleInput.value.trim();
+      state.posts[idx].title = val || ('Публикация #' + state.currentStep);
+    }
+
+    function calculateAndShowResults() {
+      screenWizard.classList.add('hidden');
+      screenResults.classList.remove('hidden');
+      screenResults.classList.add('fade-in');
+
+      const postTotals = state.posts.map(p => p.scores.reduce((sum, val) => sum + (val || 0), 0));
+      const grandTotal = postTotals.reduce((sum, v) => sum + v, 0);
+      const systemIndex = Math.round((grandTotal / 50) * 100);
+
+      const weakPostsCount = postTotals.filter(score => score < 4.5).length;
+      const wastedHours = (weakPostsCount * state.hoursPerPost).toFixed(1).replace('.0', '');
+
+      const criteriaSums = [0,0,0,0,0];
+      state.posts.forEach(p => { p.scores.forEach((score, idx) => { criteriaSums[idx] += (score || 0); }); });
+      const criteriaPcts = criteriaSums.map(s => Math.round((s / 10) * 100));
+
+      let minPct = 999, minIdx = 0;
+      criteriaPcts.forEach((pct, idx) => { if (pct < minPct) { minPct = pct; minIdx = idx; } });
+
+      document.getElementById('res-index-val').textContent = systemIndex;
+
+      const statusTitle = document.getElementById('res-status-title');
+      const statusDesc = document.getElementById('res-status-desc');
+
+      if (systemIndex >= 85) {
+        statusTitle.textContent = 'Системный конвейер';
+        statusDesc.textContent = 'Ваш контент работает как слаженная инженерная система. Минимальные потери энергии, твёрдые смыслы и чёткая связь с продуктом.';
+      } else if (systemIndex >= 60) {
+        statusTitle.textContent = 'Рабочая база с утечками';
+        statusDesc.textContent = 'Основа заложена хорошо, но ключевые узлы дают сбой: часть публикаций уходит «в молоко», не конвертируя интерес зрителей в заявки.';
+      } else if (systemIndex >= 40) {
+        statusTitle.textContent = 'Высокая зона риска';
+        statusDesc.textContent = 'Контент держится на энтузиазме. Более половины усилий тратятся впустую из-за разорванной логики и отсутствия сквозного маршрута.';
+      } else {
+        statusTitle.textContent = 'Хаотичный контент';
+        statusDesc.textContent = 'Публикации выходят бессистемно. Высокие затраты времени при околонулевой конверсии в подписчиков и продажи.';
+      }
+
+      document.getElementById('res-weak-count').textContent = weakPostsCount + ' из 5';
+      document.getElementById('res-lost-hours').textContent = wastedHours + ' ч';
+      document.getElementById('res-leak-title').textContent = criteriaNames[minIdx] + ' (' + minPct + '%)';
+      document.getElementById('res-leak-desc').textContent = leakDiagnostics[minIdx].desc;
+
+      criteriaPcts.forEach((pct, idx) => {
+        document.getElementById('crit-val-' + idx).textContent = pct + '%';
+        document.getElementById('crit-bar-' + idx).style.width = pct + '%';
+      });
+
+      const container = document.getElementById('posts-cards-container');
+      container.innerHTML = '';
+      state.posts.forEach((p, idx) => {
+        const score = postTotals[idx];
+        let badgeClass = 'good';
+        let badgeText = score.toFixed(1) + ' / 10 · Твёрдо';
+        if (score < 4.5) { badgeClass = 'poor'; badgeText = score.toFixed(1) + ' / 10 · В трубу'; }
+        else if (score < 7.0) { badgeClass = 'medium'; badgeText = score.toFixed(1) + ' / 10 · Требует усиления'; }
+
+        const card = document.createElement('div');
+        card.className = 'post-summary-card';
+        card.innerHTML = `
+          <div class="post-summary-info">
+            <h5>#${idx + 1}. ${p.title}</h5>
+            <p>Эффективность публикации</p>
+          </div>
+          <div class="post-summary-badge ${badgeClass}">${badgeText}</div>
+        `;
+        container.appendChild(card);
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById('btn-restart').addEventListener('click', () => {
+      state.currentStep = 1;
+      state.posts = [
+        { title: '', scores: [null,null,null,null,null] },
+        { title: '', scores: [null,null,null,null,null] },
+        { title: '', scores: [null,null,null,null,null] },
+        { title: '', scores: [null,null,null,null,null] },
+        { title: '', scores: [null,null,null,null,null] }
+      ];
+      document.querySelectorAll('#time-options .time-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('#time-options .time-btn[data-hours="1.0"]').classList.add('active');
+      state.hoursPerPost = 1.0;
+      screenResults.classList.add('hidden');
+      screenIntro.classList.remove('hidden');
+      screenIntro.classList.add('fade-in');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    function buildReportText() {
+      const postTotals = state.posts.map(p => p.scores.reduce((sum, val) => sum + (val || 0), 0));
+      const grandTotal = postTotals.reduce((sum, v) => sum + v, 0);
+      const systemIndex = Math.round((grandTotal / 50) * 100);
+      const weakPostsCount = postTotals.filter(s => s < 4.5).length;
+      const wastedHours = (weakPostsCount * state.hoursPerPost).toFixed(1).replace('.0', '');
+
+      let text = '📊 РЕЗУЛЬТАТЫ КОНТЕНТ-АУДИТА\n';
+      text += '━━━━━━━━━━━━━━━━━━━━━━\n';
+      text += 'Индекс системности: ' + systemIndex + ' / 100\n';
+      text += 'Слабых публикаций: ' + weakPostsCount + ' из 5\n';
+      text += 'Потрачено впустую: ' + wastedHours + ' ч\n\n';
+      text += 'Разбор по публикациям:\n';
+      state.posts.forEach((p, idx) => { text += (idx + 1) + '. ' + p.title + ': ' + postTotals[idx].toFixed(1) + '/10\n'; });
+      text += '\nПройти аудит: Контент-Аудит · @infobiz_engineering';
+      return text;
+    }
+
+    document.getElementById('btn-copy-result').addEventListener('click', () => {
+      const text = buildReportText();
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Результаты скопированы в буфер обмена');
+      }).catch(() => {
+        showToast('Не удалось скопировать автоматически — сделайте скриншот');
+      });
+    });
+
+    document.getElementById('btn-download-pdf').addEventListener('click', () => {
+      window.print();
+    });
+  </script>
+</body>
+</html>
