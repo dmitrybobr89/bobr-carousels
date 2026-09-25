@@ -222,7 +222,7 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="instagram-input">Ваш Instagram (необязательно)</label>
+          <label class="form-label" for="instagram-input">Ваш Instagram</label>
           <input type="text" id="instagram-input" class="text-input" placeholder="@username — чтобы можно было написать вам по итогам">
         </div>
 
@@ -438,7 +438,13 @@
     const instagramInput = document.getElementById('instagram-input');
 
     btnStart.addEventListener('click', () => {
-      state.instagram = instagramInput.value.trim();
+      const instagram = instagramInput.value.trim();
+      if (!instagram) {
+        showToast('Укажите ваш Instagram, чтобы получить результат.');
+        instagramInput.focus();
+        return;
+      }
+      state.instagram = instagram;
       screenIntro.classList.add('hidden');
       screenWizard.classList.remove('hidden');
       renderWizardStep(1);
