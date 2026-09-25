@@ -347,7 +347,7 @@
           <div class="stat-card">
             <div class="stat-card-label">Потрачено впустую</div>
             <div class="stat-card-val" id="res-lost-hours">0 ч</div>
-            <div class="stat-card-sub">Время на производство слабого контента</div>
+            <div class="stat-card-sub" id="res-lost-hours-sub">Слабые публикации × время на пост</div>
           </div>
         </div>
 
@@ -442,13 +442,24 @@
       toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
     }
 
+    state.hoursLabel = '1 час';
+
     timeButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         timeButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         state.hoursPerPost = parseFloat(btn.dataset.hours);
+        state.hoursLabel = btn.textContent.trim();
       });
     });
+
+    function pluralRu(n, one, few, many) {
+      const mod10 = n % 10, mod100 = n % 100;
+      if (mod100 >= 11 && mod100 <= 14) return many;
+      if (mod10 === 1) return one;
+      if (mod10 >= 2 && mod10 <= 4) return few;
+      return many;
+    }
 
     btnStart.addEventListener('click', () => {
       screenIntro.classList.add('hidden');
@@ -570,6 +581,8 @@
 
       document.getElementById('res-weak-count').textContent = weakPostsCount + ' из 5';
       document.getElementById('res-lost-hours').textContent = wastedHours + ' ч';
+      const weakWord = pluralRu(weakPostsCount, 'слабая публикация', 'слабые публикации', 'слабых публикаций');
+      document.getElementById('res-lost-hours-sub').textContent = weakPostsCount + ' ' + weakWord + ' × ' + state.hoursLabel + ' на пост';
       document.getElementById('res-leak-title').textContent = criteriaNames[minIdx] + ' (' + minPct + '%)';
       document.getElementById('res-leak-desc').textContent = leakDiagnostics[minIdx].desc;
 
@@ -614,6 +627,7 @@
       document.querySelectorAll('#time-options .time-btn').forEach(b => b.classList.remove('active'));
       document.querySelector('#time-options .time-btn[data-hours="1.0"]').classList.add('active');
       state.hoursPerPost = 1.0;
+      state.hoursLabel = '1 час';
       screenResults.classList.add('hidden');
       screenIntro.classList.remove('hidden');
       screenIntro.classList.add('fade-in');
