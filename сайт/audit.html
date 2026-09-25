@@ -413,8 +413,12 @@
     ];
 
     function weakCriteriaIndices(scores) {
-      const minScore = Math.min(...scores);
-      return scores.map((s, i) => s === minScore ? i : null).filter(i => i !== null);
+      return scores
+        .map((s, i) => ({ s, i }))
+        .sort((a, b) => a.s - b.s)
+        .slice(0, 2)
+        .map(o => o.i)
+        .sort((a, b) => a - b);
     }
 
     function weakCriteriaFor(scores) {
@@ -489,7 +493,7 @@
     function renderWizardStep(step) {
       state.currentStep = step;
       wizCurrStep.textContent = step;
-      const pct = step * 20;
+      const pct = (step - 1) * 20;
       wizCurrPct.textContent = pct + '%';
       wizProgressFill.style.width = pct + '%';
       wizBadge.textContent = 'Пост #' + step;
