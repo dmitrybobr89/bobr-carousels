@@ -109,6 +109,7 @@
     .criterion-title { font-size: 1.02rem; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
     .criterion-q { font-size: .95rem; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
     .criterion-help { font-size: .85rem; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+    .criterion-help.help-collapsed { display: none; }
 
     .answers-row { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
     @media (max-width: 480px) { .answers-row { grid-template-columns: 1fr; gap: 8px; } }
@@ -156,6 +157,7 @@
     .post-summary-info h5 { font-size: .92rem; font-weight: 800; color: var(--ink); }
     .post-summary-info p { font-size: .78rem; color: var(--muted); font-weight: 600; }
     .post-summary-info .weak-note { font-size: .8rem; color: var(--bad-text); font-weight: 700; margin-top: 4px; }
+    .post-summary-info .weak-tip { font-size: .78rem; color: var(--muted); font-weight: 500; margin-top: 3px; line-height: 1.4; }
     .post-summary-badge { font-family: 'JetBrains Mono', monospace; font-size: .8rem; font-weight: 800; padding: 5px 12px; border-radius: var(--radius-pill); white-space: nowrap; }
     .post-summary-badge.good { background: var(--good-bg); color: var(--good-text); border: 1.5px solid var(--good-line); }
     .post-summary-badge.medium { background: var(--mid-bg); color: var(--mid-text); border: 1.5px solid var(--mid-line); }
@@ -359,10 +361,10 @@
         </div>
 
         <div class="bridge-card">
-          <h4>Как устранить выявленные утечки?</h4>
-          <p>Переходите в Telegram-канал «Инфобиз-инжиниринг» — там разбор системного подхода к контенту без хаоса и выгорания.</p>
-          <a href="https://t.me/infobiz_engineering" target="_blank" class="btn-primary" style="text-decoration:none;">
-            <span>Перейти в Telegram-канал</span>
+          <h4 id="res-bridge-title">Как устранить выявленные утечки?</h4>
+          <p id="res-bridge-desc">Обсудим ваш результат лично.</p>
+          <a href="https://t.me/Dmitry_Bobr" target="_blank" class="btn-primary" style="text-decoration:none;">
+            <span>Системный разбор — в личку @Dmitry_Bobr</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
         </div>
@@ -398,9 +400,25 @@
 
     const criteriaNames = ['Задача контента','Связь с продуктом','Сильный смысл','Логика и путь','Результат'];
 
-    function weakCriteriaFor(scores) {
+    const criteriaTips = [
+      'сформулируйте цель поста одной фразой до того, как писать текст',
+      'свяжите тему с тем, что вы продаёте, хотя бы одной фразой',
+      'оставьте один чёткий вывод вместо нескольких советов сразу',
+      'добавьте фразу-мостик к прошлой или следующей публикации',
+      'добавьте явный призыв: сохранить, написать, перейти по ссылке'
+    ];
+
+    function weakCriteriaIndices(scores) {
       const minScore = Math.min(...scores);
-      return scores.map((s, i) => s === minScore ? criteriaNames[i] : null).filter(Boolean);
+      return scores.map((s, i) => s === minScore ? i : null).filter(i => i !== null);
+    }
+
+    function weakCriteriaFor(scores) {
+      return weakCriteriaIndices(scores).map(i => criteriaNames[i]);
+    }
+
+    function weakTipsFor(scores) {
+      return weakCriteriaIndices(scores).map(i => criteriaTips[i]);
     }
 
     const leakDiagnostics = [
@@ -492,6 +510,10 @@
         }
       });
 
+      document.querySelectorAll('.criterion-help').forEach(el => {
+        el.classList.toggle('help-collapsed', step > 1);
+      });
+
       btnPrevStep.classList.toggle('hidden', step === 1);
       btnNextText.textContent = step === 5 ? 'Получить результат аудита →' : 'К публикации #' + (step + 1) + ' →';
 
@@ -563,6 +585,8 @@
 
       document.getElementById('res-weak-count').textContent = weakPostsCount + ' из 5';
       document.getElementById('res-leak-title').textContent = criteriaNames[minIdx] + ' (' + minPct + '%)';
+      document.getElementById('res-bridge-title').textContent = 'Как исправить «' + criteriaNames[minIdx] + '»?';
+      document.getElementById('res-bridge-desc').textContent = 'Это ваша главная точка утечки — разберём её и остальные слабые публикации на системном разборе лично, в личных сообщениях.';
       document.getElementById('res-leak-desc').textContent = leakDiagnostics[minIdx].desc;
 
       criteriaPcts.forEach((pct, idx) => {
@@ -581,7 +605,9 @@
 
         let weakNoteHtml = '';
         if (score < 4.5) {
-          weakNoteHtml = `<div class="weak-note">Доработать: ${weakCriteriaFor(p.scores).join(', ')}</div>`;
+          const tips = weakTipsFor(p.scores);
+          weakNoteHtml = `<div class="weak-note">Доработать: ${weakCriteriaFor(p.scores).join(', ')}</div>
+            <div class="weak-tip">Как исправить: ${tips.join('; ')}</div>`;
         }
 
         const card = document.createElement('div');
@@ -605,7 +631,7 @@
         mainLeak: { criterion: criteriaNames[minIdx], percent: minPct },
         criteriaPercents: criteriaNames.reduce((acc, name, i) => { acc[name] = criteriaPcts[i]; return acc; }, {}),
         weakPosts: state.posts
-          .map((p, idx) => ({ title: p.title, score: postTotals[idx], weakCriteria: weakCriteriaFor(p.scores) }))
+          .map((p, idx) => ({ title: p.title, score: postTotals[idx], weakCriteria: weakCriteriaFor(p.scores), tips: weakTipsFor(p.scores) }))
           .filter((p, idx) => postTotals[idx] < 4.5),
         submittedAt: new Date().toISOString()
       });
@@ -653,6 +679,7 @@
         text += (idx + 1) + '. ' + p.title + ': ' + postTotals[idx].toFixed(1) + '/10';
         if (postTotals[idx] < 4.5) {
           text += ' — доработать: ' + weakCriteriaFor(p.scores).join(', ');
+          text += '\n   Как исправить: ' + weakTipsFor(p.scores).join('; ');
         }
         text += '\n';
       });
