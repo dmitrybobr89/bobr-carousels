@@ -327,7 +327,7 @@
       <!-- SCREEN 6: RESULTS -->
       <div id="screen-results" class="hidden">
         <div class="result-hero">
-          <div class="result-score-circle">
+          <div class="result-score-circle" id="res-score-circle">
             <span class="result-score-val" id="res-index-val">0</span>
             <span class="result-score-max">из 100</span>
           </div>
@@ -573,6 +573,11 @@
       criteriaPcts.forEach((pct, idx) => { if (pct < minPct) { minPct = pct; minIdx = idx; } });
 
       document.getElementById('res-index-val').textContent = systemIndex;
+
+      const scoreColor = systemIndex >= 85 ? 'var(--good-text)' : systemIndex >= 60 ? 'var(--mid-text)' : 'var(--bad-text)';
+      const scoreCircle = document.getElementById('res-score-circle');
+      scoreCircle.style.borderColor = scoreColor;
+      document.getElementById('res-index-val').style.color = scoreColor;
 
       const statusTitle = document.getElementById('res-status-title');
       const statusDesc = document.getElementById('res-status-desc');
