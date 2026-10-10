@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Дмитрий Бобр: консультация и контент-план</title>
+<meta name="description" content="Расскажи про свой блог в короткой анкете. Я посмотрю твои страницы и скажу, что делать дальше: простыми шагами, под твою ситуацию.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Эталон дизайна сайта «Запуски без команды». Шрифты: Manrope 600-800, Inter 400-700, JetBrains Mono 600-800. */
+:root{
+  --ink:#12151A; --muted:#454C57;
+  --navy-1:#5B84A8; --navy-2:#33506B; --navy-3:#16212E;
+  --surface:#FFFFFF; --bg:#F3F5F8; --line:#E4E8EE; --line-strong:#C7D0DC;
+  --accent:#1FA898; --accent-text:#0F8377;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{ font-family:'Inter', sans-serif; background:var(--bg); color:var(--ink); line-height:1.55; font-size:16px; -webkit-font-smoothing:antialiased; overflow-x:hidden;}
+@media (max-width:640px){ body{ font-size:15px; } }
+.wrap{ max-width:1040px; margin:0 auto; padding:0 20px;}
+h1,h2,h3,h4{ font-family:'Manrope', sans-serif; color:var(--ink); letter-spacing:-0.02em; line-height:1.2;}
+h1{ font-weight:800;}
+h2,h3,h4{ font-weight:700;}
+section{ padding:50px 0;}
+section.on-white{ background:#fff;}
+section.on-tint{ background:#EBEFF4;}
+.label{ font-size:.78rem; text-transform:uppercase; letter-spacing:.12em; color:var(--navy-2); font-weight:700; margin-bottom:10px; display:block;}
+.muted{ color:var(--muted);}
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; border-radius:12px; padding:15px 26px; font-weight:700; font-size:16px; text-decoration:none; cursor:pointer; border:none; line-height:1.2; transition:all .15s ease;}
+@media (min-width:641px){ .btn{ font-size:16.5px; } }
+.btn-primary{ background:linear-gradient(135deg,var(--navy-2),var(--navy-3)); color:#fff; box-shadow:0 8px 20px rgba(22,33,46,.2);}
+.btn-primary:hover{ transform:translateY(-1px); box-shadow:0 12px 24px rgba(22,33,46,.28);}
+.btn-outline{ background:#fff; color:var(--navy-2); border:2px solid var(--line-strong); transition:all .15s ease;}
+.btn-outline:hover{ background:var(--bg); border-color:var(--navy-2);}
+.card{ background:#fff; border:1.5px solid var(--line-strong); border-radius:16px; box-shadow:0 4px 0 var(--line-strong), 0 12px 26px rgba(20,22,26,.06); padding:24px;}
+.prose p{ margin-bottom:14px; line-height:1.6;}
+.prose p:last-child{ margin-bottom:0;}
+.fine-print{ font-size:13px; color:var(--muted);}
+h2.block-title{ font-size:23px; margin-bottom:8px; text-align:center;}
+@media (min-width:641px){ h2.block-title{ font-size:28px; } }
+.block-sub{ color:var(--muted); font-size:1em; max-width:680px; margin:0 auto 12px; line-height:1.55; text-align:center;}
+
+/* ШАПКА */
+header{ background:#fff; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:30;}
+.nav{ display:flex; align-items:center; justify-content:space-between; padding:12px 0; gap:16px;}
+.brand-badge{ display:inline-flex; flex-direction:column; padding:6px 14px; border-radius:12px; border:1.5px solid var(--line-strong); background:#FFFFFF; box-shadow:0 2px 6px rgba(20,22,26,.05); text-decoration:none; transition:all .15s ease; line-height:1.2;}
+.brand-badge:hover{ border-color:var(--navy-2); box-shadow:0 4px 12px rgba(20,22,26,.08);}
+.brand-badge .b-name{ font-family:'Manrope', sans-serif; font-weight:800; font-size:1.02rem; color:var(--ink); letter-spacing:-0.02em;}
+.brand-badge .b-author{ font-family:'Inter',sans-serif; font-size:.76rem; font-weight:700; color:var(--accent-text); display:flex; align-items:center; gap:5px; margin-top:2px;}
+.brand-badge .b-author::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); display:inline-block;}
+.nav .links{ display:flex; gap:8px; font-size:.88rem; font-weight:600; color:var(--muted); flex-wrap:wrap; align-items:center;}
+.nav .links a{ color:var(--muted); text-decoration:none; padding:7px 12px; border-radius:10px; border:1px solid transparent; transition:all .15s ease;}
+.nav .links a:hover{ color:var(--ink); background:var(--bg); border-color:var(--line-strong);}
+.nav-btn{ background:var(--navy-3); color:#fff; font-size:.82rem; font-weight:700; padding:9px 16px; border-radius:10px; text-decoration:none; flex-shrink:0; transition:all .15s ease;}
+.nav-btn:hover{ background:var(--navy-2);}
+@media (max-width:860px){ .nav .links{ display:none;} }
+
+/* HERO */
+.hero{ padding:50px 0 44px; text-align:center;}
+.hero h1{ font-size:27px; max-width:760px; margin:0 auto 16px; line-height:1.22;}
+@media (min-width:641px){ .hero h1{ font-size:37px; } }
+.hero .sub{ font-size:16px; color:var(--muted); max-width:620px; margin:0 auto 26px; line-height:1.6;}
+@media (min-width:641px){ .hero .sub{ font-size:18px; } }
+.hero .ctas{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+
+/* КТО Я */
+.about-card p{ margin-bottom:12px; line-height:1.6;}
+.about-card p:last-child{ margin-bottom:0;}
+
+/* УСЛУГИ */
+.service-card{ margin-top:20px; padding:26px;}
+@media (min-width:641px){ .service-card{ padding:32px; } }
+.service-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap; margin-bottom:6px;}
+.service-price{ text-align:right;}
+.service-price b{ font-size:1.5rem; font-family:'JetBrains Mono',monospace; color:var(--ink); display:block;}
+.service-price span{ font-size:.76rem; color:var(--muted);}
+.service-card h3{ font-size:20px; margin-top:4px;}
+@media (min-width:641px){ .service-card h3{ font-size:23px; } }
+.service-list{ list-style:none; margin-top:14px; display:flex; flex-direction:column; gap:9px;}
+.service-list li{ font-size:.95em; padding-left:22px; position:relative; line-height:1.55;}
+.service-list li::before{ content:'\2713'; position:absolute; left:0; top:1px; color:var(--accent-text); font-weight:800;}
+.service-sub{ font-size:.95em; margin-top:14px; line-height:1.6;}
+.service-sub strong{ color:var(--navy-3);}
+.service-fit{ background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin-top:16px; font-size:.9em; line-height:1.5;}
+.service-fit b{ display:block; font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; color:var(--navy-2); margin-bottom:4px;}
+.table-cols{ list-style:none; margin-top:10px; display:flex; flex-direction:column; gap:6px;}
+.table-cols li{ font-size:.92em; padding-left:16px; position:relative; color:var(--muted);}
+.table-cols li::before{ content:'\2013'; position:absolute; left:0; color:var(--navy-2);}
+.not-included{ margin-top:16px; font-size:.95em; color:var(--ink); font-weight:600;}
+
+/* КАК ЗАПИСАТЬСЯ */
+.steps-list{ margin-top:24px; display:flex; flex-direction:column; gap:12px;}
+.step-item{ display:flex; align-items:flex-start; gap:14px;}
+.step-item .num{ display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:9px; background:var(--navy-3); color:#fff; font-family:'JetBrains Mono',monospace; font-weight:800; font-size:.9rem; flex-shrink:0;}
+.step-item p{ font-size:.95em; line-height:1.55; padding-top:3px;}
+
+/* КОМУ ПОДОЙДЁТ */
+.fit-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:22px;}
+@media (max-width:768px){ .fit-grid{ grid-template-columns:1fr;} }
+.fit-card.yes{ border-left:4px solid var(--accent);}
+.fit-card.no{ border-left:4px solid var(--line-strong);}
+.fit-card ul{ list-style:none; display:flex; flex-direction:column; gap:10px;}
+.fit-card li{ font-size:.95em; color:var(--ink); padding-left:20px; position:relative; line-height:1.5;}
+.fit-card.yes li::before{ content:'\2713'; position:absolute; left:0; color:var(--accent-text); font-weight:800;}
+.fit-card.no li::before{ content:'\2013'; position:absolute; left:0; color:var(--muted); font-weight:800;}
+
+/* FAQ */
+.faq-list{ max-width:720px; margin:24px auto 0; display:flex; flex-direction:column; gap:12px;}
+.faq-accordion{ background:#fff; border:1.5px solid var(--line-strong); border-radius:16px; padding:0!important; margin:0!important; overflow:hidden; box-shadow:0 4px 0 var(--line-strong), 0 12px 26px rgba(20,22,26,.06); transition:all .15s ease;}
+.faq-accordion[open]{ border-color:var(--navy-2); box-shadow:0 4px 0 var(--navy-2), 0 14px 30px rgba(22,33,46,.1);}
+.faq-accordion summary{ padding:18px 24px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-family:'Manrope', sans-serif; font-size:1rem; font-weight:700; color:var(--ink); list-style:none; user-select:none; gap:14px; background:#fff; line-height:1.4; transition:background .15s ease, color .15s ease;}
+.faq-accordion summary::-webkit-details-marker{ display:none;}
+.faq-accordion[open] summary{ background:#EFF3F7; border-bottom:1px solid var(--line); color:var(--navy-3);}
+.faq-accordion summary .faq-arrow{ display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%; background:var(--bg); color:var(--navy-2); font-family:'JetBrains Mono', monospace; font-weight:800; font-size:.74rem; flex-shrink:0; transition:transform .2s ease, background .2s ease, color .2s ease;}
+.faq-accordion[open] summary .faq-arrow{ transform:rotate(180deg); background:var(--accent); color:#fff;}
+.faq-accordion .faq-content{ padding:4px 24px 22px; font-size:.95em; color:var(--ink); line-height:1.6; background:#FFFFFF;}
+.faq-accordion .faq-content p{ margin:0;}
+
+/* ФИНАЛЬНЫЙ ПРИЗЫВ */
+.final-cta{ text-align:center; background:linear-gradient(135deg,var(--navy-2),var(--navy-3)); border-radius:22px; padding:44px 28px; color:#fff;}
+.final-cta h2{ color:#fff; margin-bottom:14px; font-size:23px;}
+@media (min-width:641px){ .final-cta h2{ font-size:28px; } }
+.final-cta .btn-primary{ background:#fff; color:var(--navy-3);}
+.final-cta .btn-primary:hover{ background:var(--bg);}
+
+/* РЕКВИЗИТЫ И ПОДВАЛ */
+.legal-card{ font-size:.86em; color:var(--muted); line-height:1.6;}
+footer{ padding:32px 0; text-align:center; color:var(--muted); font-size:.84em;}
+footer .flinks{ display:flex; gap:16px; justify-content:center; margin-bottom:12px; flex-wrap:wrap;}
+footer a{ color:var(--muted); text-decoration:none; transition:color .15s ease;}
+footer a:hover{ color:var(--navy-3);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="#top" class="brand-badge">
+      <span class="b-name">Дмитрий Бобр</span>
+      <span class="b-author">системный продюсер</span>
+    </a>
+    <nav class="links">
+      <a href="#services">Услуги</a>
+      <a href="#signup">Как записаться</a>
+      <a href="#faq">Вопросы</a>
+    </nav>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcLmS_Oh9KG2ejggivdCOJJdHtJfhRKL95vkcm1EvlU8W1Ug/viewform" target="_blank" class="nav-btn">Заполнить анкету</a>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <h1>Блог есть, польза есть, а клиентов нет</h1>
+    <p class="sub">Расскажи про свой блог в короткой анкете. Я посмотрю твои страницы и скажу, что делать дальше: простыми шагами, под твою ситуацию.</p>
+    <div class="ctas">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcLmS_Oh9KG2ejggivdCOJJdHtJfhRKL95vkcm1EvlU8W1Ug/viewform" target="_blank" class="btn btn-primary">Заполнить анкету предзаписи</a>
+      <a href="https://dmitrybobr89.github.io/bobr-carousels/audit.html" target="_blank" class="btn btn-outline">Проверить свой блог за 5 минут</a>
+    </div>
+  </div>
+</section>
+
+<section class="on-white">
+  <div class="wrap">
+    <span class="label" style="text-align:center;display:block;">Кто я</span>
+    <div class="card about-card prose" style="max-width:720px;margin:16px auto 0;">
+      <p>С 2015 года работаю в экспертных проектах: был в командах, снимал и монтировал, отвечал за продакшн. Изнутри видел, на чём эксперты теряют клиентов и деньги.</p>
+      <p>С 2022 года занимаюсь продюсированием самостоятельно: веду блоги как продюсер. Веду свой блог про самопродюсирование и знаю, как блог привлекает клиентов, от первого поста до записи.</p>
+      <p>Я был по обе стороны камеры: знаю, как держаться перед ней, и знаю, какие процессы идут за ней. Поэтому вижу твой блог и глазами человека в кадре, и глазами продюсера.</p>
+    </div>
+  </div>
+</section>
+
+<section class="on-tint" id="services">
+  <div class="wrap">
+    <span class="label" style="text-align:center;display:block;">Услуги</span>
+    <h2 class="block-title">Чем я могу помочь</h2>
+
+    <div class="card service-card">
+      <div class="service-head">
+        <h3>Консультация</h3>
+        <div class="service-price"><b>150 BYN</b><span>около 50 $</span></div>
+      </div>
+      <ul class="service-list">
+        <li>Ты заполняешь анкету. Я читаю её и захожу на твои страницы.</li>
+        <li>Разбираю твою нишу и всё, что у тебя есть на сейчас: страницы, контент, путь клиента.</li>
+        <li>На созвоне разбираем твой запрос. Я даю рекомендации: что делать дальше и как решить твою задачу.</li>
+        <li>Ты уходишь с понятными следующими шагами, действуешь сам и получаешь результат.</li>
+      </ul>
+      <div class="service-fit">
+        <b>Подойдёт, если</b>
+        Хочешь понять, что сейчас происходит с твоим блогом, и получить понятный план действий.
+      </div>
+    </div>
+
+    <div class="card service-card">
+      <div class="service-head">
+        <h3>Контент-план на месяц</h3>
+        <div class="service-price"><b>800 BYN</b><span>около 260 $</span></div>
+      </div>
+      <ul class="service-list">
+        <li>Консультация. Она входит в услугу: без разговора с тобой план не собрать.</li>
+        <li>Разбор твоей точки А: твоя аудитория, конкуренты и то, чем твоё предложение отличается от других, и все активы, которые у тебя уже есть.</li>
+        <li>Контент-воронка на месяц: от 10 до 15 тем, которые работают вместе. Я показываю, как правильно связать Instagram и Telegram, чтобы они вели человека от первого просмотра до заявки к тебе.</li>
+        <li>Идеи лид-магнита: бесплатного материала, за который человек оставляет контакт, если у тебя его ещё нет.</li>
+      </ul>
+      <p class="service-sub"><strong>Что ты получаешь:</strong> таблицу. В ней по каждой теме:</p>
+      <ul class="table-cols">
+        <li>тема</li>
+        <li>угол: с какой стороны её раскрыть, с примером, что можно сказать</li>
+        <li>ключевая идея, которую надо донести</li>
+        <li>площадка, где это публикуется</li>
+        <li>куда ведём человека дальше: на какую другую площадку или к записи</li>
+      </ul>
+      <p class="service-sub">Это не дословные тексты. Когда ты записываешь, слова всё равно меняются, а своя речь звучит живее. Поэтому ты получаешь структуру и главные мысли, а говоришь их своими словами.</p>
+      <p class="not-included">Не входит: съёмка, монтаж и публикация. Это делаешь ты сам.</p>
+      <div class="service-fit">
+        <b>Подойдёт, если</b>
+        Ты понимаешь свою нишу и знаешь, что нужно твоему клиенту, а вот как разложить темы на месяц контента и связать площадки, не знаешь.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="on-white" id="signup">
+  <div class="wrap" style="max-width:640px;">
+    <span class="label" style="text-align:center;display:block;">Как записаться</span>
+    <h2 class="block-title">Три шага</h2>
+    <div class="steps-list">
+      <div class="step-item"><span class="num">1</span><p>Заполняешь анкету. Это 1-2 минуты.</p></div>
+      <div class="step-item"><span class="num">2</span><p>Я читаю её, подтверждаю запись и предлагаю время.</p></div>
+      <div class="step-item"><span class="num">3</span><p>Ты оплачиваешь по ссылке, которую я пришлю после подтверждения. Потом созвон.</p></div>
+    </div>
+    <p class="fine-print" style="margin-top:18px;text-align:center;">Живёшь не в Беларуси? Уточним сумму в твоей валюте, когда я подтвержу запись.</p>
+  </div>
+</section>
+
+<section class="on-tint">
+  <div class="wrap">
+    <span class="label" style="text-align:center;display:block;">Кому подойдёт</span>
+    <h2 class="block-title">Для кого эти услуги</h2>
+    <div class="fit-grid">
+      <div class="card fit-card yes">
+        <h3 style="font-size:17px;margin-bottom:10px;">Кому подойдёт</h3>
+        <ul>
+          <li>Тем, кто ведёт блог, но результат не устраивает.</li>
+          <li>Тем, кто только начинает.</li>
+        </ul>
+      </div>
+      <div class="card fit-card no">
+        <h3 style="font-size:17px;margin-bottom:10px;">Чего я не делаю</h3>
+        <ul>
+          <li>Не пишу посты и не снимаю ролики за тебя.</li>
+          <li>Не обещаю быстрых и лёгких клиентов. Мы идём к результату системно: шаг за шагом, от твоей точки А.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="on-white" id="faq">
+  <div class="wrap" style="max-width:760px;">
+    <span class="label" style="text-align:center;display:block;">Вопросы</span>
+    <h2 class="block-title">Частые вопросы</h2>
+    <div class="faq-list">
+      <details class="faq-accordion">
+        <summary><span>Я только начинаю вести блог. Мне это подходит?</span><span class="faq-arrow">v</span></summary>
+        <div class="faq-content"><p>Да. Мы отталкиваемся от твоей точки А, то есть от того, где ты сейчас. Если блог только начался, начнём с основного: кто твоя аудитория, чем ты помогаешь и как это объяснить людям.</p></div>
+      </details>
+      <details class="faq-accordion">
+        <summary><span>Как оплатить?</span><span class="faq-arrow">v</span></summary>
+        <div class="faq-content"><p>Платить на сайте не нужно. Заполняешь анкету, я напишу тебе, подтвержу запись и пришлю ссылку на оплату.</p></div>
+      </details>
+      <details class="faq-accordion">
+        <summary><span>Как узнать, что выбрать: консультацию или контент-план?</span><span class="faq-arrow">v</span></summary>
+        <div class="faq-content"><p>Если нужен один разговор и понятные следующие шаги, бери консультацию. Если нужен готовый план на месяц, бери контент-план: консультация уже внутри.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="on-tint">
+  <div class="wrap">
+    <div class="final-cta">
+      <h2>Хочешь разобраться со своим блогом?</h2>
+      <p style="color:#C7D0DC;margin-bottom:22px;">Заполни анкету, это 1-2 минуты.</p>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcLmS_Oh9KG2ejggivdCOJJdHtJfhRKL95vkcm1EvlU8W1Ug/viewform" target="_blank" class="btn btn-primary">Заполнить анкету предзаписи</a>
+    </div>
+  </div>
+</section>
+
+<section class="on-white" style="padding:36px 0;">
+  <div class="wrap" style="max-width:720px;">
+    <div class="card legal-card">
+      <p>Бобр Дмитрий Михайлович, плательщик налога на профессиональный доход, УНП MB0070216, г. Могилёв.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="flinks">
+      <a href="/oferta.html">Публичная оферта</a>
+      <a href="/privacy.html">Обработка персональных данных</a>
+      <a href="https://www.instagram.com/dmitry.bobr/" target="_blank">Instagram @dmitry.bobr</a>
+    </div>
+    <div>Дмитрий Бобр © 2026</div>
+  </div>
+</footer>
+
+</body>
+</html>
