@@ -191,7 +191,7 @@
 
   <div class="container">
     <div class="header-bar">
-      <div class="brand-tag"><span class="dot"></span><span>Инфобиз-инжиниринг</span></div>
+      <div class="brand-tag"><span class="dot"></span><span>Дмитрий Бобр</span></div>
       <div class="meta-tag">5 публикаций · 3 мин</div>
     </div>
 
@@ -223,7 +223,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
               <span class="num">03</span>
             </div>
-            <div class="step-text"><h4>Точность: точка утечки</h4><p>В конце увидите, где именно ломается ваша система контента.</p></div>
+            <div class="step-text"><h4>Точность: слабое место</h4><p>В конце увидите, где именно ломается ваша система контента.</p></div>
           </div>
         </div>
 
@@ -345,7 +345,7 @@
         </div>
 
         <div class="leak-box">
-          <span class="leak-badge">Главная точка утечки</span>
+          <span class="leak-badge">Главное слабое место</span>
           <h3 class="leak-title" id="res-leak-title">Загрузка...</h3>
           <p class="leak-desc" id="res-leak-desc">Анализ уязвимости системы контента...</p>
         </div>
@@ -365,10 +365,10 @@
         </div>
 
         <div class="bridge-card">
-          <h4 id="res-bridge-title">Как устранить выявленные утечки?</h4>
-          <p id="res-bridge-desc">Что с этим делать именно в вашем блоге, разбираем на консультации: 60-90 минут, 150 BYN.</p>
+          <h4 id="res-bridge-title">Как это исправить?</h4>
+          <p id="res-bridge-desc">Что делать именно с вашим блогом, разберём вместе на консультации. Заполните анкету, это 1-2 минуты.</p>
           <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcLmS_Oh9KG2ejggivdCOJJdHtJfhRKL95vkcm1EvlU8W1Ug/viewform" target="_blank" class="btn-primary" style="text-decoration:none;">
-            <span>Записаться: анкета на 3 минуты</span>
+            <span>Заполнить анкету: 1-2 минуты</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
         </div>
@@ -403,6 +403,9 @@
     };
 
     const criteriaNames = ['Задача контента','Связь с продуктом','Сильный смысл','Логика и путь','Результат'];
+
+    // Вторая услуга («Система контента») предлагается, только когда слабое место про роль постов в плане и связь между публикациями
+    const bridgeWithPlan = [true, false, false, true, false];
 
     const criteriaTips = [
       'сформулируйте цель поста одной фразой до того, как писать текст',
@@ -586,7 +589,7 @@
         statusTitle.textContent = 'Системный конвейер';
         statusDesc.textContent = 'Ваш контент работает как слаженная инженерная система. Минимальные потери энергии, твёрдые смыслы и чёткая связь с продуктом.';
       } else if (systemIndex >= 60) {
-        statusTitle.textContent = 'Рабочая база с утечками';
+        statusTitle.textContent = 'Рабочая база со слабыми местами';
         statusDesc.textContent = 'Основа заложена хорошо, но ключевые узлы дают сбой: часть публикаций уходит «в молоко», не конвертируя интерес зрителей в заявки.';
       } else if (systemIndex >= 40) {
         statusTitle.textContent = 'Высокая зона риска';
@@ -599,7 +602,9 @@
       document.getElementById('res-weak-count').textContent = weakPostsCount + ' из 5';
       document.getElementById('res-leak-title').textContent = criteriaNames[minIdx] + ' (' + minPct + '%)';
       document.getElementById('res-bridge-title').textContent = 'Как исправить «' + criteriaNames[minIdx] + '»?';
-      document.getElementById('res-bridge-desc').textContent = 'Это ваша главная точка утечки. Что с ней делать именно в вашем блоге, разбираем на консультации: 60-90 минут, 150 BYN.';
+      document.getElementById('res-bridge-desc').textContent = bridgeWithPlan[minIdx]
+        ? 'Это ваше главное слабое место. Что с ним делать именно в вашем блоге, разберём вместе. В анкете выберите, что вам нужно: консультацию или Систему контента. Это 1-2 минуты.'
+        : 'Это ваше главное слабое место. Что с ним делать именно в вашем блоге, разберём вместе на консультации. Заполните анкету, это 1-2 минуты.';
       document.getElementById('res-leak-desc').textContent = leakDiagnostics[minIdx].desc;
 
       criteriaPcts.forEach((pct, idx) => {
