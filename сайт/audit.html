@@ -414,6 +414,49 @@
 
   <script>
     const WEBHOOK_URL = 'https://n8n.169-58-165-201.sslip.io/webhook/kontent-audit';
+    const EVENTS_URL = 'https://n8n.169-58-165-201.sslip.io/webhook/kontent-audit-events';
+
+    // Анонимный счётчик действий на странице: без ника и личных данных, ничего не меняет для человека.
+    const track = (function () {
+      let session = '';
+      try { session = sessionStorage.getItem('ka_s') || ''; } catch (e) {}
+      if (!session) {
+        session = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+        try { sessionStorage.setItem('ka_s', session); } catch (e) {}
+      }
+      const q = new URLSearchParams(location.search);
+      const ua = navigator.userAgent || '';
+      const device = /Instagram/i.test(ua) ? 'instagram_app' : (/Mobi|Android|iPhone/i.test(ua) ? 'mobile' : 'desktop');
+      const t0 = Date.now();
+      const sent = {};
+      return function (event, step, once) {
+        try {
+          if (once && sent[event + ':' + step]) return;
+          sent[event + ':' + step] = true;
+          fetch(EVENTS_URL, {
+            method: 'POST',
+            keepalive: true,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              event: event, step: step || 0, session: session,
+              utm_content: q.get('utm_content') || '', utm_campaign: q.get('utm_campaign') || '',
+              device: device, seconds: Math.round((Date.now() - t0) / 1000)
+            })
+          }).catch(function () {});
+        } catch (e) {}
+      };
+    })();
+    let trackScreen = 0; // 0 заставка, 1-5 шаги, 6 результат
+    track('page_open', 0, true);
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') track('leave', trackScreen); });
+    document.addEventListener('click', function (e) {
+      try {
+        const a = e.target.closest && e.target.closest('a[href*="docs.google.com/forms"]');
+        if (a) track('anketa_click', 6);
+        const b = e.target.closest && e.target.closest('button');
+        if (b && (b.id === 'btn-download-pdf' || b.id === 'btn-copy-result' || b.id === 'btn-restart')) track(b.id, 6);
+      } catch (err) {}
+    });
 
     const state = {
       currentStep: 1,
@@ -487,15 +530,18 @@
     }
 
     const instagramInput = document.getElementById('instagram-input');
+    instagramInput.addEventListener('focus', function () { track('field_focus', 0, true); });
 
     btnStart.addEventListener('click', () => {
       const instagram = instagramInput.value.trim();
       if (!instagram) {
+        track('start_empty', 0);
         showToast('Укажите ваш Instagram, чтобы получить результат.');
         instagramInput.focus();
         return;
       }
       state.instagram = instagram;
+      track('start', 0, true);
       screenIntro.classList.add('hidden');
       screenWizard.classList.remove('hidden');
       renderWizardStep(1);
@@ -517,6 +563,8 @@
 
     function renderWizardStep(step) {
       state.currentStep = step;
+      trackScreen = step;
+      track('step', step, true);
       wizCurrStep.textContent = step;
       const pct = (step - 1) * 20;
       wizCurrPct.textContent = pct + '%';
@@ -580,6 +628,8 @@
     }
 
     function calculateAndShowResults() {
+      trackScreen = 6;
+      track('results_shown', 6, true);
       screenWizard.classList.add('hidden');
       screenResults.classList.remove('hidden');
       screenResults.classList.add('fade-in');
