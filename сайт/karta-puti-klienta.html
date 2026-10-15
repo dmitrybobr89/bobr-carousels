@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Карта пути клиента | Проверка блога за 3 минуты</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Карта пути клиента: мягкий выпуклый стиль (по референсу «Product UI Styleguide») */
+    :root {
+      --bg: #E9E6E0;
+      --bg-2: #F1EFEA;
+      --surface: #F6F4F0;
+      --ink: #2E2D2B;
+      --muted: #6B6862;
+      --faint: #A09C95;
+      --line: #D9D6D0;
+
+      --mint: #9BE0C8;
+      --mint-2: #7FD1B5;
+      --mint-soft: #D3F2E6;
+      --mint-deep: #1F6F58;
+      --focus: #5FE3BC;
+
+      --gray: #DDDAD4;
+      --gray-2: #CBC8C1;
+
+      --yellow: #F3DE8C;
+      --yellow-soft: #FAF0C6;
+      --yellow-ink: #6E5A0E;
+
+      --rose: #E8473D;
+      --rose-soft: #F8DAD7;
+      --red-1: #EE6358;
+      --red-2: #CF2F26;
+      --rose-ink: #B3261E;
+
+      --raise: 0 16px 30px -12px rgba(105,95,80,.38), 0 4px 8px -2px rgba(105,95,80,.16), inset 0 2px 2px rgba(255,255,255,.95), inset 0 -3px 6px rgba(150,140,125,.10);
+      --raise-sm: 0 9px 16px -7px rgba(105,95,80,.36), 0 2px 4px rgba(105,95,80,.12), inset 0 2px 2px rgba(255,255,255,.9), inset 0 -2px 4px rgba(150,140,125,.10);
+      --inset: inset 0 3px 7px rgba(105,95,80,.22), inset 0 -2px 3px rgba(255,255,255,.85);
+      --glow: 0 0 0 4px rgba(95,227,188,.40);
+      --shadow-dark: 0 11px 14px -7px rgba(28,26,22,.55), 0 4px 6px -2px rgba(28,26,22,.30), inset 0 2px 2px rgba(255,255,255,.75), inset 0 -3px 5px rgba(20,90,70,.18);
+      --shadow-dark-hover: 0 15px 18px -8px rgba(28,26,22,.58), 0 6px 8px -2px rgba(28,26,22,.30), inset 0 2px 2px rgba(255,255,255,.75), inset 0 -3px 5px rgba(20,90,70,.18);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container { width: 100%; max-width: 760px; margin: 0 auto; padding: 32px 18px 64px; flex: 1; }
+
+    .header-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; gap: 10px; }
+    .brand-tag, .meta-tag { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; background: var(--surface); border-radius: 999px; box-shadow: var(--raise-sm); font-size: .74rem; font-weight: 700; color: var(--muted); }
+    .brand-tag { letter-spacing: .06em; text-transform: uppercase; color: var(--ink); }
+    .brand-tag .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--mint-2); box-shadow: 0 0 0 3px rgba(95,227,188,.35); }
+
+    .draft-banner { background: var(--yellow-soft); color: var(--yellow-ink); border-radius: 18px; padding: 11px 18px; font-size: .82rem; font-weight: 700; margin-bottom: 18px; box-shadow: var(--raise-sm); }
+
+    .card { background: var(--surface); border-radius: 34px; box-shadow: var(--raise); padding: 42px 38px; position: relative; }
+    @media (max-width: 640px) { .card { padding: 26px 18px; border-radius: 28px; } }
+
+    .fade-in { animation: fadeSlideUp 0.28s cubic-bezier(0.16,1,0.3,1) forwards; }
+    @keyframes fadeSlideUp { from { opacity:0; transform:translateY(8px);} to { opacity:1; transform:translateY(0);} }
+
+    .section-label { font-size: .74rem; text-transform: uppercase; letter-spacing: .14em; color: var(--mint-deep); font-weight: 800; margin-bottom: 12px; display: block; }
+    .hero-title { font-family: 'Manrope', 'Inter', sans-serif; font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); line-height: 1.08; margin-bottom: 16px; }
+    .hero-subtitle { font-size: 1rem; color: var(--muted); margin-bottom: 28px; line-height: 1.6; max-width: 580px; }
+
+    /* Шесть мест: как чипы Filter из референса */
+    .place-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 30px; }
+    @media (max-width: 640px) { .place-grid { grid-template-columns: repeat(2,1fr); } }
+    .place-chip { display: flex; align-items: center; gap: 10px; background: linear-gradient(180deg, #C9F0E0 0%, #A8E6CF 45%, #86D4B8 100%); color: #17382E; border-radius: 999px; padding: 15px 18px; font-size: .84rem; font-weight: 700; line-height: 1.25; box-shadow: 0 14px 16px -7px rgba(28,26,22,.60), 0 5px 7px -2px rgba(28,26,22,.34), inset 0 3px 3px rgba(255,255,255,.95), inset 0 -7px 9px rgba(20,100,78,.30), inset 3px 0 4px rgba(255,255,255,.35), inset -3px 0 4px rgba(20,100,78,.14); }
+    .place-chip::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--mint-deep); flex-shrink: 0; opacity: .75; }
+
+    /* Три пункта-подсказки */
+    .steps-stack { display: flex; flex-direction: column; gap: 14px; margin-bottom: 32px; }
+    .step-row { display: flex; align-items: center; gap: 18px; }
+    .step-badge { width: 72px; height: 72px; border-radius: 24px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--mint-deep); box-shadow: var(--raise-sm); background: linear-gradient(180deg, #ECEAE5, var(--gray)); }
+    .step-badge svg { width: 24px; height: 24px; margin-bottom: 3px; stroke: var(--mint-deep); }
+    .step-badge .num { font-size: .66rem; font-weight: 800; letter-spacing: .05em; }
+    .step-row:nth-child(1) .step-badge { background: linear-gradient(180deg, #A8E6CF, var(--mint)); box-shadow: var(--shadow-dark); }
+    .step-text h4 { font-size: 1rem; font-weight: 800; margin-bottom: 3px; color: var(--ink); }
+    .step-text p { font-size: .86rem; color: var(--muted); line-height: 1.45; }
+    @media (max-width: 480px) { .step-row { align-items: flex-start; } .step-badge { width: 56px; height: 56px; border-radius: 19px; } .step-badge svg { width: 20px; height: 20px; } }
+
+    /* Кнопки */
+    .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: linear-gradient(180deg, #A8E6CF, var(--mint-2)); color: #143A2E; border: none; border-radius: 999px; padding: 17px 26px; font-family: inherit; font-size: 1rem; font-weight: 800; cursor: pointer; box-shadow: var(--shadow-dark); transition: transform .15s ease, box-shadow .15s ease; }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-dark-hover); }
+    .btn-primary:active { transform: scale(0.985); box-shadow: 0 5px 8px -4px rgba(28,26,22,.5), inset 0 2px 2px rgba(255,255,255,.7); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    .btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(180deg, #E8E5E0, var(--gray)); color: var(--muted); border: none; border-radius: 999px; padding: 15px 24px; font-family: inherit; font-size: .92rem; font-weight: 700; cursor: pointer; box-shadow: var(--raise-sm); transition: transform .15s ease; }
+    .btn-secondary:hover { color: var(--ink); transform: translateY(-1px); }
+    .btn-secondary:active { transform: scale(0.985); }
+
+    .footer-note { text-align: center; margin-top: 34px; font-size: .82rem; color: var(--muted); }
+    .footer-note a { color: var(--mint-deep); text-decoration: none; font-weight: 700; }
+    .footer-note a:hover { text-decoration: underline; }
+
+    /* Прогресс: тонкая полоса как у Tabs */
+    .progress-wrapper { margin-bottom: 26px; }
+    .progress-meta { display: flex; justify-content: space-between; font-size: .86rem; font-weight: 700; color: var(--muted); margin-bottom: 10px; }
+    .progress-meta .num { color: var(--mint-deep); font-weight: 800; }
+    .progress-track { width: 100%; height: 10px; background: var(--gray); border-radius: 999px; overflow: hidden; box-shadow: var(--inset); }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--mint), var(--mint-2)); border-radius: 999px; transition: width .4s cubic-bezier(0.34,1.3,0.64,1); }
+
+    .step-header { margin-bottom: 22px; padding-bottom: 16px; border-bottom: 2px solid var(--line); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .post-badge { background: linear-gradient(180deg, #A8E6CF, var(--mint)); color: #17382E; font-size: .8rem; font-weight: 800; padding: 7px 16px; border-radius: 999px; box-shadow: var(--shadow-dark); }
+    .step-header h2 { font-family: 'Manrope', 'Inter', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--ink); }
+
+    .form-group { margin-bottom: 22px; }
+    .form-label { display: block; font-size: .88rem; font-weight: 700; color: var(--ink); margin-bottom: 9px; padding-left: 6px; }
+    .text-input { width: 100%; padding: 15px 20px; font-family: inherit; font-size: .98rem; border: 2px solid transparent; border-radius: 999px; background: #E7E4DE; color: var(--ink); box-shadow: var(--inset); transition: box-shadow .15s, border-color .15s; }
+    .text-input::placeholder { color: var(--faint); }
+    .text-input:focus { outline: none; border-color: var(--focus); box-shadow: var(--inset), var(--glow); background: #EEECE7; }
+
+    /* Вопросы */
+    .criterion-card { background: var(--bg-2); border-radius: 28px; padding: 22px 20px 20px; margin-bottom: 18px; box-shadow: var(--raise-sm); transition: box-shadow .2s ease; }
+    .criterion-card.is-answered { box-shadow: var(--raise-sm), 0 0 0 3px rgba(127,209,181,.55); }
+    .criterion-q { font-size: 1rem; font-weight: 700; color: var(--ink); margin-bottom: 6px; line-height: 1.45; }
+
+    .example-toggle { background: linear-gradient(180deg, #ECEAE5, var(--gray)); border: none; color: var(--mint-deep); font-family: inherit; font-size: .8rem; font-weight: 800; cursor: pointer; padding: 6px 16px; margin: 4px 0 14px; border-radius: 999px; box-shadow: var(--raise-sm); }
+    .example-text { font-size: .88rem; color: #111; font-weight: 500; background: #E7E4DE; border-radius: 18px; padding: 12px 16px; margin-bottom: 14px; line-height: 1.5; box-shadow: var(--inset); }
+
+    .answers-row { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+    @media (max-width: 480px) { .answers-row { grid-template-columns: 1fr; gap: 10px; } }
+    .answer-btn { display: flex; align-items: center; justify-content: space-between; background: linear-gradient(180deg, #EFEDE8, var(--gray)); border: none; border-radius: 999px; padding: 14px 20px; font-family: inherit; font-size: .9rem; font-weight: 700; color: var(--ink); cursor: pointer; text-align: left; box-shadow: var(--raise-sm); transition: transform .15s ease, box-shadow .15s ease; user-select: none; }
+    .answer-btn:hover { transform: translateY(-1px); }
+    .answer-btn .btn-indicator { width: 20px; height: 20px; border-radius: 50%; background: #E3E0DA; box-shadow: var(--inset); margin-left: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 800; color: #fff; }
+    .answer-btn.selected { background: linear-gradient(180deg, #A8E6CF, var(--mint-2)); color: #143A2E; box-shadow: var(--shadow-dark); }
+    .answer-btn.selected .btn-indicator { background: var(--mint-deep); box-shadow: none; }
+    .answer-btn.selected .btn-indicator::after { content: '✓'; }
+
+    .actions-bar { display: flex; gap: 12px; margin-top: 28px; }
+    .actions-bar .btn-primary { flex: 1; }
+
+    /* Результат */
+    .result-hero { text-align: center; padding-bottom: 26px; margin-bottom: 26px; border-bottom: 2px solid var(--line); }
+    .result-status-title { font-family: 'Manrope', 'Inter', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--ink); margin-bottom: 10px; line-height: 1.2; }
+    .result-status-desc { font-size: .97rem; color: var(--muted); max-width: 540px; margin: 0 auto; line-height: 1.55; }
+    .result-disclaimer { font-size: .78rem; color: var(--faint); margin-top: 12px; }
+
+    .leak-box { background: linear-gradient(180deg, #BDEBD8, var(--mint)); border-radius: 26px; padding: 22px 24px; margin-bottom: 30px; box-shadow: var(--shadow-dark); }
+    .leak-badge { display: inline-block; font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--mint-deep); background: rgba(255,255,255,.65); padding: 5px 14px; border-radius: 999px; margin-bottom: 8px; }
+    .leak-desc { font-size: .98rem; color: #17382E; line-height: 1.55; font-weight: 600; }
+
+    .criteria-breakdown { margin-bottom: 30px; }
+    .criteria-breakdown h3 { font-family: 'Manrope', 'Inter', sans-serif; font-size: 1.15rem; font-weight: 800; color: var(--ink); margin-bottom: 18px; }
+    .crit-bar-row { margin-bottom: 16px; }
+    .crit-bar-meta { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: .88rem; font-weight: 700; margin-bottom: 7px; }
+    .crit-bar-meta span.score { font-variant-numeric: tabular-nums; color: var(--mint-deep); font-weight: 800; }
+    .crit-bar-track { width: 100%; height: 12px; background: var(--gray); border-radius: 999px; overflow: hidden; box-shadow: var(--inset); }
+    .crit-bar-fill { height: 100%; background: linear-gradient(90deg, var(--mint), var(--mint-2)); border-radius: 999px; transition: width .7s cubic-bezier(0.16,1,0.3,1); }
+    .crit-bar-row.mid .crit-bar-fill { background: linear-gradient(90deg, #F7E8A4, var(--yellow)); }
+    .crit-bar-row.mid .score { color: var(--yellow-ink); }
+    .crit-bar-row.low .crit-bar-fill { background: linear-gradient(90deg, var(--red-1), var(--red-2)); }
+    .crit-bar-row.low .score { color: var(--rose-ink); }
+    .weak-chip { display: inline-block; margin-left: 8px; background: linear-gradient(180deg, var(--red-1), var(--red-2)); color: #fff; font-size: .68rem; font-weight: 800; padding: 3px 12px; border-radius: 999px; box-shadow: 0 6px 8px -4px rgba(28,26,22,.55), inset 0 1px 1px rgba(255,255,255,.45); vertical-align: middle; }
+
+    /* Блок с услугами: стопка карточек */
+    .bridge-card { background: var(--bg-2); border-radius: 30px; padding: 28px 24px; text-align: center; margin-bottom: 36px; margin-top: 8px; box-shadow: var(--raise-sm), 0 10px 0 -5px #E2DFD9, 0 20px 0 -10px #D8D5CE; }
+    .bridge-options { list-style: none; padding: 0; margin: 0 0 20px; text-align: left; }
+    .bridge-options > li { padding: 18px 20px; background: var(--surface); border-radius: 22px; margin-bottom: 12px; font-size: .9rem; color: var(--muted); line-height: 1.55; box-shadow: var(--raise-sm); }
+    .bridge-options .opt-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+    .bridge-options .opt-name { font-weight: 800; font-size: 1rem; color: var(--ink); }
+    .bridge-options .opt-price { font-weight: 800; font-size: .88rem; color: var(--mint-deep); white-space: nowrap; background: var(--mint-soft); padding: 4px 12px; border-radius: 999px; }
+    .bridge-options .opt-list { list-style: none; padding: 0; margin: 0 0 8px; }
+    .bridge-options .opt-list li { position: relative; padding-left: 16px; margin-bottom: 4px; }
+    .bridge-options .opt-list li::before { content: ''; position: absolute; left: 0; top: .62em; width: 6px; height: 6px; border-radius: 50%; background: var(--mint-2); }
+    .bridge-options .opt-fit { margin: 0; font-size: .88rem; color: var(--ink); }
+    .bridge-card h4 { font-family: 'Manrope', 'Inter', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--ink); margin-bottom: 8px; }
+    .bridge-card p { font-size: .9rem; color: var(--muted); margin-bottom: 20px; line-height: 1.55; }
+
+    .result-buttons { display: flex; flex-direction: column; gap: 14px; }
+
+    .hidden { display: none !important; }
+
+    .toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 12px); background: var(--ink); color: #fff; padding: 14px 24px; border-radius: 999px; font-size: .9rem; font-weight: 700; box-shadow: 0 14px 30px rgba(0,0,0,0.25); opacity: 0; pointer-events: none; transition: all .25s ease; z-index: 50; text-align: center; max-width: 90vw; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    #screen-contact .actions-bar { margin-top: 8px; }
+
+    @media print {
+      body { background: #fff; }
+      .header-bar, .btn-secondary, .result-buttons, .bridge-card, .draft-banner, #btn-restart, #btn-copy-result, #btn-download-pdf { display: none !important; }
+      .card { box-shadow: none; padding: 0; background: #fff; }
+      .container { padding: 0; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header-bar">
+      <div class="brand-tag"><span class="dot"></span><span>Дмитрий Бобр</span></div>
+      <div class="meta-tag">12 вопросов · 3 мин</div>
+    </div>
+
+    <div class="draft-banner hidden" id="draft-banner">Черновик для просмотра. Ответы и результат никуда не отправляются.</div>
+
+    <div class="card" id="main-card">
+
+      <!-- SCREEN 0: INTRO -->
+      <div id="screen-intro" class="fade-in">
+        <span class="section-label">Проверка блога</span>
+        <h1 class="hero-title">Карта пути клиента</h1>
+        <p class="hero-subtitle">Путь клиента это то, что проходит человек, пока выбирает эксперта и покупает. У него шесть мест, где он может остановиться. Ответь на 12 коротких вопросов, и увидишь, где у твоего блога слабее всего.</p>
+
+        <div class="place-grid">
+          <div class="place-chip">Тебя находят</div>
+          <div class="place-chip">Понятно, чем ты помогаешь</div>
+          <div class="place-chip">Есть повод довериться</div>
+          <div class="place-chip">Легко написать</div>
+          <div class="place-chip">Понятно, что купить</div>
+          <div class="place-chip">Доходят до оплаты</div>
+        </div>
+
+        <div class="steps-stack">
+          <div class="step-row">
+            <div class="step-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              <span class="num">01</span>
+            </div>
+            <div class="step-text"><h4>12 вопросов, 3 минуты</h4><p>На каждый можно ответить сразу, ничего считать не нужно.</p></div>
+          </div>
+          <div class="step-row">
+            <div class="step-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span class="num">02</span>
+            </div>
+            <div class="step-text"><h4>Отвечай по тому, что есть сейчас</h4><p>Не по тому, как хотелось бы.</p></div>
+          </div>
+          <div class="step-row">
+            <div class="step-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+              <span class="num">03</span>
+            </div>
+            <div class="step-text"><h4>В конце: слабое место и действие</h4><p>Увидишь, где слабее всего, и одно действие на эту неделю.</p></div>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="btn-start">
+          <span>Начать</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+
+      <!-- SCREEN 1-6: WIZARD -->
+      <div id="screen-wizard" class="hidden">
+        <div class="progress-wrapper">
+          <div class="progress-meta">
+            <span>Место: <span class="num" id="wiz-curr-step">1</span> из 6</span>
+            <span class="num" id="wiz-curr-pct">0%</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="wiz-progress-fill" style="width: 0%;"></div></div>
+        </div>
+
+        <div class="step-header">
+          <span class="post-badge" id="wiz-badge">Место 1</span>
+          <h2 id="wiz-title-text">Тебя находят</h2>
+        </div>
+
+        <div id="questions-container"></div>
+
+        <div class="actions-bar">
+          <button class="btn-secondary" id="btn-prev-step">← Назад</button>
+          <button class="btn-primary" id="btn-next-step"><span id="btn-next-text">Дальше →</span></button>
+        </div>
+      </div>
+
+      <!-- SCREEN: BEFORE RESULT -->
+      <div id="screen-contact" class="hidden">
+        <span class="section-label">Почти готово</span>
+        <h1 class="hero-title" style="font-size:2rem;">Результат готов</h1>
+        <p class="hero-subtitle">Напиши свой Instagram и одной строкой, чем ты занимаешься. Так я смогу написать тебе по результату.</p>
+
+        <div class="form-group">
+          <label class="form-label" for="instagram-input">Твой Instagram</label>
+          <input type="text" id="instagram-input" class="text-input" placeholder="@username">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="work-input">Чем занимаешься и кому помогаешь</label>
+          <input type="text" id="work-input" class="text-input" placeholder="Одной строкой">
+        </div>
+
+        <div class="actions-bar">
+          <button class="btn-secondary" id="btn-back-contact">← Назад</button>
+          <button class="btn-primary" id="btn-show-result"><span>Показать результат</span></button>
+        </div>
+      </div>
+
+      <!-- SCREEN: RESULTS -->
+      <div id="screen-results" class="hidden">
+        <div class="result-hero">
+          <span class="section-label" id="res-label">Твой результат</span>
+          <h2 class="result-status-title" id="res-title">Расчёт...</h2>
+          <p class="result-status-desc" id="res-desc"></p>
+          <p class="result-disclaimer">Это наблюдение по твоим ответам, не оценка твоей экспертности. Почему так получилось, по тесту определить нельзя.</p>
+        </div>
+
+        <div class="leak-box">
+          <span class="leak-badge">На этой неделе</span>
+          <p class="leak-desc" id="res-action" style="margin-top:6px;"></p>
+        </div>
+
+        <div class="criteria-breakdown">
+          <h3>Шесть мест твоего пути</h3>
+          <div id="bars-container"></div>
+        </div>
+
+        <div class="bridge-card" id="bridge-card">
+          <h4>Почему люди останавливаются именно здесь?</h4>
+          <p>Тест показывает место, а причину по ответам не угадать. Её находят на консультации.</p>
+          <ul class="bridge-options">
+            <li>
+              <div class="opt-head"><span class="opt-name">Консультация</span><span class="opt-price">150 BYN</span></div>
+              <p class="opt-fit" style="margin-bottom:0;">Разбираем твой путь клиента на созвоне. Подойдёт, если хочешь понять, что с ним происходит, и уйти с понятными следующими шагами.</p>
+            </li>
+            <li id="opt-system">
+              <div class="opt-head"><span class="opt-name">Система контента</span><span class="opt-price">800 BYN</span></div>
+              <ul class="opt-list">
+                <li>Исследования твоей ниши, аудитории и конкурентов</li>
+                <li>Контент-план на месяц: от 10 до 15 тем для твоих площадок</li>
+                <li>Набор промптов, чтобы дальше выстраивать контент самостоятельно</li>
+                <li>Консультация уже внутри</li>
+              </ul>
+              <p class="opt-fit" style="margin-bottom:0;">Подойдёт, если нужен готовый план: первый месяц у тебя расписан, а дальше ты знаешь, как работать с контентом самостоятельно.</p>
+            </li>
+          </ul>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcLmS_Oh9KG2ejggivdCOJJdHtJfhRKL95vkcm1EvlU8W1Ug/viewform" target="_blank" class="btn-primary" style="text-decoration:none;">
+            <span>Заполнить анкету: 1-2 минуты</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <div class="result-buttons">
+          <button class="btn-secondary" id="btn-download-pdf"><span>⬇ Скачать результат в PDF</span></button>
+          <button class="btn-secondary" id="btn-copy-result"><span>📋 Скопировать результат</span></button>
+          <button class="btn-secondary" id="btn-restart"><span>🔄 Пройти заново</span></button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-note">Карта пути клиента © 2026 · Дмитрий Бобр · <a href="https://t.me/infobiz_engineering" target="_blank">@infobiz_engineering</a></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Черновик: на любом адресе, кроме боевого, ничего не отправляется.
+    // Боевые адреса сценариев n8n для этой страницы ещё не созданы (пусто = не отправлять).
+    const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !/[?&]send=1/.test(location.search);
+    const WEBHOOK_URL = LOCAL ? '' : 'https://n8n.169-58-165-201.sslip.io/webhook/kontent-audit';
+    const EVENTS_URL = LOCAL ? '' : 'https://n8n.169-58-165-201.sslip.io/webhook/kontent-audit-events';
+    if (LOCAL) {
+      const b = document.getElementById('draft-banner');
+      b.textContent = 'Локальный просмотр. Ответы и результат никуда не отправляются.';
+      b.classList.remove('hidden');
+    }
+    const QS = new URLSearchParams(location.search);
+    const UTM_CAMPAIGN = QS.get('utm_campaign') || 'karta_direct';
+    const UTM_CONTENT = QS.get('utm_content') || '';
+
+    // Анонимный счётчик действий: без ника и личных данных.
+    const track = (function () {
+      if (!EVENTS_URL) return function () {};
+      let session = '';
+      try { session = sessionStorage.getItem('kp_s') || ''; } catch (e) {}
+      if (!session) {
+        session = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+        try { sessionStorage.setItem('kp_s', session); } catch (e) {}
+      }
+      const q = new URLSearchParams(location.search);
+      const ua = navigator.userAgent || '';
+      const device = /Instagram/i.test(ua) ? 'instagram_app' : (/Mobi|Android|iPhone/i.test(ua) ? 'mobile' : 'desktop');
+      const t0 = Date.now();
+      const sent = {};
+      return function (event, step, once) {
+        try {
+          if (once && sent[event + ':' + step]) return;
+          sent[event + ':' + step] = true;
+          fetch(EVENTS_URL, {
+            method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              event: event, step: step || 0, session: session,
+              utm_content: UTM_CONTENT, utm_campaign: UTM_CAMPAIGN,
+              device: device, seconds: Math.round((Date.now() - t0) / 1000)
+            })
+          }).catch(function () {});
+        } catch (e) {}
+      };
+    })();
+    let trackScreen = 0; // 0 заставка, 1-6 места, 7 контакты, 8 результат
+    track('page_open', 0, true);
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') track('leave', trackScreen); });
+    document.addEventListener('click', function (e) {
+      try {
+        const a = e.target.closest && e.target.closest('a[href*="docs.google.com/forms"]');
+        if (a) track('anketa_click', 8);
+        const b = e.target.closest && e.target.closest('button');
+        if (b && (b.id === 'btn-download-pdf' || b.id === 'btn-copy-result' || b.id === 'btn-restart')) track(b.id, 8);
+      } catch (err) {}
+    });
+
+    const ANSWERS = [
+      { label: 'Да', score: 2 },
+      { label: 'Скорее да', score: 1.5 },
+      { label: 'Скорее нет', score: 0.5 },
+      { label: 'Нет', score: 0 }
+    ];
+
+    const PLACES = [
+      {
+        name: 'Тебя находят',
+        weakTitle: 'Слабее всего: тебя находят новые люди',
+        weakDesc: 'По ответам, новых людей из поиска, рекомендаций и чужих постов пока мало.',
+        action: 'Выбери одно место, где уже есть твои будущие клиенты: чужой блог, чат, комментарии. Три раза за неделю полезно ответь там на чей-то вопрос.',
+        q: [
+          { t: 'За последние 3 месяца к тебе приходили новые люди: из поиска, по рекомендации или из чужого поста?', ex: 'Например: «Тебя посоветовала знакомая» или «Тебя упомянули в чужом блоге».' },
+          { t: 'За последние 3 месяца кто-то написал тебе первым после того, как увидел твой пост или ролик?' }
+        ]
+      },
+      {
+        name: 'Понятно, чем ты помогаешь',
+        weakTitle: 'Слабее всего: понятно, чем ты помогаешь',
+        weakDesc: 'По ответам, из профиля и постов быстро не видно, кому и с чем ты помогаешь.',
+        action: 'Перепиши шапку профиля: кому помогаешь, с чем, что человек получит. Покажи двум людям не из твоей сферы и спроси, что они поняли.',
+        q: [
+          { t: 'Если открыть твой профиль с телефона, за 5 секунд видно, кому ты помогаешь и с чем?', ex: 'Например: «Помогаю мастерам, у которых клиенты спрашивают цену и пропадают».' },
+          { t: 'Среди последних 10 постов или роликов есть хотя бы один, где прямо названа ситуация, с которой ты помогаешь?', ex: 'Например: пост «Что ответить, если клиент спросил цену и пропал».' }
+        ]
+      },
+      {
+        name: 'Есть повод довериться',
+        weakTitle: 'Слабее всего: повод довериться',
+        weakDesc: 'По ответам, в блоге мало видимых примеров твоей работы и того, как ты думаешь.',
+        action: 'Опубликуй один разбор реальной ситуации: с чем пришёл человек, что ты предложил, что изменилось. Если нельзя раскрывать, разбери типичную ситуацию без имён.',
+        q: [
+          { t: 'За последние 3 месяца в блоге была публикация, где показана твоя работа: отзыв, пример, результат или разбор?', ex: 'Подойдёт любое из трёх: отзыв клиента, разбор одного случая или рассказ о том, как проходит твоя работа.' },
+          { t: 'В блоге есть материал, из которого видно, как ты думаешь и работаешь: ответ на вопрос, метод, мини-пример?' }
+        ]
+      },
+      {
+        name: 'Легко написать',
+        weakTitle: 'Слабее всего: человеку непросто начать разговор',
+        weakDesc: 'По ответам, способ связаться или скорость ответа пока не делают первый шаг лёгким.',
+        action: 'В шапку и в следующие три публикации добавь одну фразу: «Есть вопрос: напиши мне в личные». На все новые сообщения отвечай в течение рабочего дня.',
+        q: [
+          { t: 'В профиле или в последних постах есть понятный способ связаться: кнопка, ссылка или прямой призыв написать?', ex: 'Например: «Напиши «хочу записаться» в личные».' },
+          { t: 'На первое сообщение от нового человека ты обычно отвечаешь в течение рабочего дня?' }
+        ]
+      },
+      {
+        name: 'Понятно, что купить',
+        weakTitle: 'Слабее всего: понятно, что у тебя можно купить',
+        weakDesc: 'По ответам, из блога не очень ясно, какие у тебя услуги и как записаться.',
+        action: 'Закрепи один пост или страницу: какие услуги есть, для какой ситуации каждая и как записаться.',
+        q: [
+          { t: 'В профиле или блоге понятно, какие у тебя услуги и для какой ситуации каждая подходит?' },
+          { t: 'Человек может записаться без лишних вопросов: есть ссылка, форма или понятная инструкция?' }
+        ]
+      },
+      {
+        name: 'Доходят до оплаты',
+        weakTitle: 'Слабее всего: люди доходят до оплаты',
+        weakDesc: 'По ответам, обращения пока реже заканчиваются оплатой.',
+        action: 'Выпиши всех, кто за последние 3 месяца обсуждал с тобой задачу и не заплатил. Каждому коротко напиши: актуально ли ещё, и предложи один следующий шаг.',
+        q: [
+          { t: 'За последние 3 месяца хотя бы один человек заплатил тебе после знакомства с блогом, по рекомендации или после переписки?' },
+          { t: 'Когда человек спрашивает про услугу, у тебя есть готовые ответы: сколько стоит, сколько длится, как оплатить?' }
+        ]
+      }
+    ];
+
+    const OK_RESULT = {
+      title: 'Серьёзной слабой точки нет',
+      desc: 'По ответам, остановок, которые заметно мешают, сейчас нет. Все шесть мест выглядят рабочими.',
+      action: 'Возьми самое низкое из шести мест и подтяни его на один шаг. Это удобно разобрать вместе.'
+    };
+
+    const state = {
+      step: 1,
+      instagram: '',
+      work: '',
+      scores: PLACES.map(p => p.q.map(() => null))
+    };
+
+    const screenIntro = document.getElementById('screen-intro');
+    const screenWizard = document.getElementById('screen-wizard');
+    const screenContact = document.getElementById('screen-contact');
+    const screenResults = document.getElementById('screen-results');
+    const qContainer = document.getElementById('questions-container');
+    const instagramInput = document.getElementById('instagram-input');
+    const workInput = document.getElementById('work-input');
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+    }
+    function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+    function renderStep(step) {
+      state.step = step;
+      trackScreen = step;
+      track('step', step, true);
+      const place = PLACES[step - 1];
+      const pct = Math.round((step - 1) / 6 * 100);
+      document.getElementById('wiz-curr-step').textContent = step;
+      document.getElementById('wiz-curr-pct').textContent = pct + '%';
+      document.getElementById('wiz-progress-fill').style.width = pct + '%';
+      document.getElementById('wiz-badge').textContent = 'Место ' + step;
+      document.getElementById('wiz-title-text').textContent = place.name;
+
+      qContainer.innerHTML = '';
+      place.q.forEach((q, qi) => {
+        const card = document.createElement('div');
+        card.className = 'criterion-card';
+        const saved = state.scores[step - 1][qi];
+        let html = '<div class="criterion-q">' + esc(q.t) + '</div>';
+        if (q.ex) {
+          html += '<button type="button" class="example-toggle">Пример</button><div class="example-text hidden">' + esc(q.ex) + '</div>';
+        } else {
+          html += '<div style="height:10px"></div>';
+        }
+        html += '<div class="answers-row">' + ANSWERS.map(a =>
+          '<button type="button" class="answer-btn" data-score="' + a.score + '"><span>' + a.label + '</span><span class="btn-indicator"></span></button>'
+        ).join('') + '</div>';
+        card.innerHTML = html;
+
+        const toggle = card.querySelector('.example-toggle');
+        if (toggle) {
+          toggle.addEventListener('click', () => {
+            const ex = card.querySelector('.example-text');
+            const open = ex.classList.toggle('hidden') === false;
+            toggle.textContent = open ? 'Скрыть пример' : 'Пример';
+          });
+        }
+        const btns = card.querySelectorAll('.answer-btn');
+        btns.forEach(btn => {
+          if (saved !== null && parseFloat(btn.dataset.score) === saved) { btn.classList.add('selected'); card.classList.add('is-answered'); }
+          btn.addEventListener('click', () => {
+            btns.forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            card.classList.add('is-answered');
+            state.scores[step - 1][qi] = parseFloat(btn.dataset.score);
+          });
+        });
+        qContainer.appendChild(card);
+      });
+
+      screenWizard.classList.remove('fade-in'); void screenWizard.offsetWidth; screenWizard.classList.add('fade-in');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById('btn-start').addEventListener('click', () => {
+      track('start', 0, true);
+      screenIntro.classList.add('hidden');
+      screenWizard.classList.remove('hidden');
+      renderStep(1);
+    });
+
+    document.getElementById('btn-prev-step').addEventListener('click', () => {
+      if (state.step > 1) {
+        renderStep(state.step - 1);
+      } else {
+        screenWizard.classList.add('hidden');
+        screenIntro.classList.remove('hidden');
+        screenIntro.classList.add('fade-in');
+        trackScreen = 0;
+      }
+    });
+
+    document.getElementById('btn-next-step').addEventListener('click', () => {
+      if (state.scores[state.step - 1].some(s => s === null)) {
+        showToast('Ответь на оба вопроса, чтобы идти дальше.');
+        return;
+      }
+      if (state.step < 6) {
+        renderStep(state.step + 1);
+      } else {
+        trackScreen = 7;
+        track('contact_shown', 7, true);
+        screenWizard.classList.add('hidden');
+        screenContact.classList.remove('hidden');
+        screenContact.classList.add('fade-in');
+        instagramInput.focus();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+
+    document.getElementById('btn-back-contact').addEventListener('click', () => {
+      screenContact.classList.add('hidden');
+      screenWizard.classList.remove('hidden');
+      renderStep(6);
+    });
+
+    function computeResult() {
+      const pcts = state.scores.map(arr => Math.round(arr.reduce((s, v) => s + (v || 0), 0) / 4 * 100));
+      let minPct = 999, minIdx = 0;
+      pcts.forEach((p, i) => { if (p < minPct) { minPct = p; minIdx = i; } });
+      const ok = minPct >= 75;
+      return { pcts, minPct, minIdx, ok };
+    }
+
+    document.getElementById('btn-show-result').addEventListener('click', () => {
+      const ig = instagramInput.value.trim();
+      const work = workInput.value.trim();
+      if (!ig || !work) {
+        showToast('Заполни оба поля, чтобы увидеть результат.');
+        (!ig ? instagramInput : workInput).focus();
+        return;
+      }
+      state.instagram = ig;
+      state.work = work;
+      showResults();
+    });
+
+    function showResults() {
+      trackScreen = 8;
+      track('results_shown', 8, true);
+      screenContact.classList.add('hidden');
+      screenResults.classList.remove('hidden');
+      screenResults.classList.add('fade-in');
+
+      const r = computeResult();
+      const head = r.ok ? OK_RESULT : PLACES[r.minIdx];
+      document.getElementById('res-title').textContent = r.ok ? OK_RESULT.title : head.weakTitle;
+      document.getElementById('res-desc').textContent = r.ok ? OK_RESULT.desc : head.weakDesc;
+      document.getElementById('res-action').textContent = r.ok ? OK_RESULT.action : head.action;
+
+      const bars = document.getElementById('bars-container');
+      bars.innerHTML = '';
+      PLACES.forEach((p, i) => {
+        const weak = !r.ok && i === r.minIdx;
+        const row = document.createElement('div');
+        const tone = r.pcts[i] >= 75 ? 'ok' : (r.pcts[i] >= 45 ? 'mid' : 'low');
+        row.className = 'crit-bar-row ' + tone + (weak ? ' is-weak' : '');
+        row.innerHTML = '<div class="crit-bar-meta"><span class="name">' + esc(p.name) + (weak ? '<span class="weak-chip">слабее всего</span>' : '') + '</span><span class="score">' + r.pcts[i] + '%</span></div>' +
+          '<div class="crit-bar-track"><div class="crit-bar-fill" style="width:0%"></div></div>';
+        bars.appendChild(row);
+        requestAnimationFrame(() => requestAnimationFrame(() => { row.querySelector('.crit-bar-fill').style.width = r.pcts[i] + '%'; }));
+      });
+
+      // Система контента показывается, только если слабое место 1, 2 или 3.
+      document.getElementById('opt-system').classList.toggle('hidden', r.ok || r.minIdx > 2);
+
+      sendResultsWebhook({
+        instagram: state.instagram,
+        work: state.work,
+        weakPlace: r.ok ? null : PLACES[r.minIdx].name,
+        percents: PLACES.reduce((acc, p, i) => { acc[p.name] = r.pcts[i]; return acc; }, {}),
+        utm_campaign: UTM_CAMPAIGN,
+        utm_content: UTM_CONTENT,
+        submittedAt: new Date().toISOString()
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function sendResultsWebhook(payload) {
+      if (!WEBHOOK_URL) return;
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source: 'Карта пути клиента', ...payload })
+      }).catch(err => console.warn('Не удалось отправить результат:', err));
+    }
+
+    document.getElementById('btn-restart').addEventListener('click', () => {
+      state.step = 1; state.instagram = ''; state.work = '';
+      state.scores = PLACES.map(p => p.q.map(() => null));
+      instagramInput.value = ''; workInput.value = '';
+      screenResults.classList.add('hidden');
+      screenIntro.classList.remove('hidden');
+      screenIntro.classList.add('fade-in');
+      trackScreen = 0;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    function buildReportText() {
+      const r = computeResult();
+      let text = '📍 КАРТА ПУТИ КЛИЕНТА\n━━━━━━━━━━━━━━━━━━━━━━\n';
+      text += r.ok ? OK_RESULT.title + '\n' : PLACES[r.minIdx].weakTitle + '\n';
+      text += '\nШесть мест пути:\n';
+      PLACES.forEach((p, i) => { text += (i + 1) + '. ' + p.name + ': ' + r.pcts[i] + '%\n'; });
+      text += '\nНа этой неделе: ' + (r.ok ? OK_RESULT.action : PLACES[r.minIdx].action);
+      text += '\n\nКарта пути клиента · @infobiz_engineering';
+      return text;
+    }
+
+    document.getElementById('btn-copy-result').addEventListener('click', () => {
+      navigator.clipboard.writeText(buildReportText()).then(() => {
+        showToast('Результат скопирован в буфер обмена');
+      }).catch(() => {
+        showToast('Не удалось скопировать автоматически, сделай скриншот');
+      });
+    });
+
+    document.getElementById('btn-download-pdf').addEventListener('click', () => { window.print(); });
+  </script>
+</body>
+
+</html>
