@@ -182,6 +182,7 @@
     .bridge-card h4 { font-family: 'Manrope', 'Inter', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--ink); margin-bottom: 8px; }
     .bridge-card p { font-size: .9rem; color: var(--muted); margin-bottom: 20px; line-height: 1.55; }
 
+    .bridge-card p.ig-note { margin: 22px 0 12px; font-size: .88rem; }
     .result-buttons { display: flex; flex-direction: column; gap: 14px; }
 
     .hidden { display: none !important; }
@@ -283,15 +284,11 @@
       <div id="screen-contact" class="hidden">
         <span class="section-label">Почти готово</span>
         <h1 class="hero-title" style="font-size:2rem;">Результат готов</h1>
-        <p class="hero-subtitle">Напиши свой Instagram и одной строкой, чем ты занимаешься. Так я смогу написать тебе по результату.</p>
+        <p class="hero-subtitle">Напиши свой Instagram, чтобы я мог написать тебе по результату.</p>
 
         <div class="form-group">
           <label class="form-label" for="instagram-input">Твой Instagram</label>
           <input type="text" id="instagram-input" class="text-input" placeholder="@username">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="work-input">Чем занимаешься и кому помогаешь</label>
-          <input type="text" id="work-input" class="text-input" placeholder="Одной строкой">
         </div>
 
         <div class="actions-bar">
@@ -342,6 +339,8 @@
             <span>Заполнить анкету: 1-2 минуты</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
+          <p class="ig-note">Консультация пока не нужна? Подпишись на мой Instagram: там я рассказываю, как эксперту продавать в соцсетях.</p>
+          <a href="https://www.instagram.com/dmitry.bobr/" target="_blank" rel="noopener" class="btn-secondary" id="btn-instagram" style="text-decoration:none;width:100%;"><span>Подписаться в Instagram</span></a>
         </div>
 
         <div class="result-buttons">
@@ -409,6 +408,8 @@
       try {
         const a = e.target.closest && e.target.closest('a[href*="docs.google.com/forms"]');
         if (a) track('anketa_click', 8);
+        const ig = e.target.closest && e.target.closest('a[href*="instagram.com/dmitry.bobr"]');
+        if (ig) track('instagram_click', 8);
         const b = e.target.closest && e.target.closest('button');
         if (b && (b.id === 'btn-download-pdf' || b.id === 'btn-copy-result' || b.id === 'btn-restart')) track(b.id, 8);
       } catch (err) {}
@@ -425,46 +426,51 @@
       {
         name: 'Тебя находят',
         weakTitle: 'Слабее всего: тебя находят новые люди',
+        short: 'тебя пока редко находят новые люди',
         weakDesc: 'По ответам, новых людей из поиска, рекомендаций и чужих постов пока мало.',
         action: 'Выбери одно место, где уже есть твои будущие клиенты: чужой блог, чат, комментарии. Три раза за неделю полезно ответь там на чей-то вопрос.',
         q: [
-          { t: 'За последние 3 месяца к тебе приходили новые люди: из поиска, по рекомендации или из чужого поста?', ex: 'Например: «Тебя посоветовала знакомая» или «Тебя упомянули в чужом блоге».' },
-          { t: 'За последние 3 месяца кто-то написал тебе первым после того, как увидел твой пост или ролик?' }
+          { t: 'За последний месяц к тебе приходили новые люди: из поиска, по рекомендации или из чужого поста?', ex: 'Например: «Тебя посоветовала знакомая» или «Тебя упомянули в чужом блоге».' },
+          { t: 'За последний месяц кто-то написал тебе первым после того, как увидел твой пост или ролик?' }
         ]
       },
       {
         name: 'Понятно, чем ты помогаешь',
         weakTitle: 'Слабее всего: понятно, чем ты помогаешь',
+        short: 'из профиля и постов быстро не видно, кому и с чем ты помогаешь',
         weakDesc: 'По ответам, из профиля и постов быстро не видно, кому и с чем ты помогаешь.',
         action: 'Перепиши шапку профиля: кому помогаешь, с чем, что человек получит. Покажи двум людям не из твоей сферы и спроси, что они поняли.',
         q: [
-          { t: 'Если открыть твой профиль с телефона, за 5 секунд видно, кому ты помогаешь и с чем?', ex: 'Например: «Помогаю мастерам, у которых клиенты спрашивают цену и пропадают».' },
+          { t: 'Если открыть твой профиль с телефона, за 5 секунд видно, кому ты помогаешь и с чем?', ex: 'Например: «Помогаю экспертам вести блог, который приводит клиентов». Сразу видно, кому и с чем.' },
           { t: 'Среди последних 10 постов или роликов есть хотя бы один, где прямо названа ситуация, с которой ты помогаешь?', ex: 'Например: пост «Что ответить, если клиент спросил цену и пропал».' }
         ]
       },
       {
         name: 'Есть повод довериться',
         weakTitle: 'Слабее всего: повод довериться',
+        short: 'в блоге мало видимых примеров твоей работы',
         weakDesc: 'По ответам, в блоге мало видимых примеров твоей работы и того, как ты думаешь.',
         action: 'Опубликуй один разбор реальной ситуации: с чем пришёл человек, что ты предложил, что изменилось. Если нельзя раскрывать, разбери типичную ситуацию без имён.',
         q: [
-          { t: 'За последние 3 месяца в блоге была публикация, где показана твоя работа: отзыв, пример, результат или разбор?', ex: 'Подойдёт любое из трёх: отзыв клиента, разбор одного случая или рассказ о том, как проходит твоя работа.' },
+          { t: 'За последний месяц в блоге была публикация, где показана твоя работа: отзыв, пример, результат или разбор?', ex: 'Подойдёт любое из трёх: отзыв клиента, разбор одного случая или рассказ о том, как проходит твоя работа.' },
           { t: 'В блоге есть материал, из которого видно, как ты думаешь и работаешь: ответ на вопрос, метод, мини-пример?' }
         ]
       },
       {
         name: 'Легко написать',
         weakTitle: 'Слабее всего: человеку непросто начать разговор',
+        short: 'человеку непросто начать разговор',
         weakDesc: 'По ответам, способ связаться или скорость ответа пока не делают первый шаг лёгким.',
-        action: 'В шапку и в следующие три публикации добавь одну фразу: «Есть вопрос: напиши мне в личные». На все новые сообщения отвечай в течение рабочего дня.',
+        action: 'В шапку и в следующие три публикации добавь одну фразу: «Есть вопрос: напиши мне в директ». На все новые сообщения отвечай в течение рабочего дня.',
         q: [
-          { t: 'В профиле или в последних постах есть понятный способ связаться: кнопка, ссылка или прямой призыв написать?', ex: 'Например: «Напиши «хочу записаться» в личные».' },
+          { t: 'В профиле или в последних постах есть понятный способ связаться: кнопка, ссылка или прямой призыв написать?', ex: 'Например: «Напиши «хочу записаться» в директ».' },
           { t: 'На первое сообщение от нового человека ты обычно отвечаешь в течение рабочего дня?' }
         ]
       },
       {
         name: 'Понятно, что купить',
         weakTitle: 'Слабее всего: понятно, что у тебя можно купить',
+        short: 'из блога не очень ясно, какие у тебя услуги и как записаться',
         weakDesc: 'По ответам, из блога не очень ясно, какие у тебя услуги и как записаться.',
         action: 'Закрепи один пост или страницу: какие услуги есть, для какой ситуации каждая и как записаться.',
         q: [
@@ -475,10 +481,11 @@
       {
         name: 'Доходят до оплаты',
         weakTitle: 'Слабее всего: люди доходят до оплаты',
+        short: 'обращения пока реже заканчиваются оплатой',
         weakDesc: 'По ответам, обращения пока реже заканчиваются оплатой.',
-        action: 'Выпиши всех, кто за последние 3 месяца обсуждал с тобой задачу и не заплатил. Каждому коротко напиши: актуально ли ещё, и предложи один следующий шаг.',
+        action: 'Выпиши всех, кто за последний месяц обсуждал с тобой задачу и не заплатил. Каждому коротко напиши: актуально ли ещё, и предложи один следующий шаг.',
         q: [
-          { t: 'За последние 3 месяца хотя бы один человек заплатил тебе после знакомства с блогом, по рекомендации или после переписки?' },
+          { t: 'За последний месяц хотя бы один человек заплатил тебе после знакомства с блогом, по рекомендации или после переписки?' },
           { t: 'Когда человек спрашивает про услугу, у тебя есть готовые ответы: сколько стоит, сколько длится, как оплатить?' }
         ]
       }
@@ -493,7 +500,6 @@
     const state = {
       step: 1,
       instagram: '',
-      work: '',
       scores: PLACES.map(p => p.q.map(() => null))
     };
 
@@ -503,7 +509,6 @@
     const screenResults = document.getElementById('screen-results');
     const qContainer = document.getElementById('questions-container');
     const instagramInput = document.getElementById('instagram-input');
-    const workInput = document.getElementById('work-input');
 
     let toastTimer = null;
     function showToast(msg) {
@@ -612,22 +617,22 @@
 
     function computeResult() {
       const pcts = state.scores.map(arr => Math.round(arr.reduce((s, v) => s + (v || 0), 0) / 4 * 100));
-      let minPct = 999, minIdx = 0;
-      pcts.forEach((p, i) => { if (p < minPct) { minPct = p; minIdx = i; } });
+      let minPct = 999;
+      pcts.forEach(p => { if (p < minPct) minPct = p; });
       const ok = minPct >= 75;
-      return { pcts, minPct, minIdx, ok };
+      // Если несколько мест одинаково слабые, показываем до двух самых ранних по порядку.
+      const weak = ok ? [] : pcts.map((p, i) => i).filter(i => pcts[i] === minPct).slice(0, 2);
+      return { pcts, minPct, weak, ok };
     }
 
     document.getElementById('btn-show-result').addEventListener('click', () => {
       const ig = instagramInput.value.trim();
-      const work = workInput.value.trim();
-      if (!ig || !work) {
-        showToast('Заполни оба поля, чтобы увидеть результат.');
-        (!ig ? instagramInput : workInput).focus();
+      if (!ig) {
+        showToast('Напиши свой Instagram, чтобы увидеть результат.');
+        instagramInput.focus();
         return;
       }
       state.instagram = ig;
-      state.work = work;
       showResults();
     });
 
@@ -639,15 +644,29 @@
       screenResults.classList.add('fade-in');
 
       const r = computeResult();
-      const head = r.ok ? OK_RESULT : PLACES[r.minIdx];
-      document.getElementById('res-title').textContent = r.ok ? OK_RESULT.title : head.weakTitle;
-      document.getElementById('res-desc').textContent = r.ok ? OK_RESULT.desc : head.weakDesc;
-      document.getElementById('res-action').textContent = r.ok ? OK_RESULT.action : head.action;
+      const titleEl = document.getElementById('res-title');
+      const descEl = document.getElementById('res-desc');
+      const actionEl = document.getElementById('res-action');
+      if (r.ok) {
+        titleEl.textContent = OK_RESULT.title;
+        descEl.textContent = OK_RESULT.desc;
+        actionEl.textContent = OK_RESULT.action;
+      } else if (r.weak.length === 1) {
+        const w = PLACES[r.weak[0]];
+        titleEl.textContent = w.weakTitle;
+        descEl.textContent = w.weakDesc;
+        actionEl.textContent = w.action;
+      } else {
+        const a = PLACES[r.weak[0]], b = PLACES[r.weak[1]];
+        titleEl.textContent = 'Слабее всего два места: «' + a.name + '» и «' + b.name + '»';
+        descEl.textContent = 'По ответам: ' + a.short + '; ' + b.short + '.';
+        actionEl.innerHTML = '<b>Сначала:</b> ' + esc(a.action) + '<br><br><b>Потом:</b> ' + esc(b.action);
+      }
 
       const bars = document.getElementById('bars-container');
       bars.innerHTML = '';
       PLACES.forEach((p, i) => {
-        const weak = !r.ok && i === r.minIdx;
+        const weak = r.weak.includes(i);
         const row = document.createElement('div');
         const tone = r.pcts[i] >= 75 ? 'ok' : (r.pcts[i] >= 45 ? 'mid' : 'low');
         row.className = 'crit-bar-row ' + tone + (weak ? ' is-weak' : '');
@@ -657,13 +676,12 @@
         requestAnimationFrame(() => requestAnimationFrame(() => { row.querySelector('.crit-bar-fill').style.width = r.pcts[i] + '%'; }));
       });
 
-      // Система контента показывается, только если слабое место 1, 2 или 3.
-      document.getElementById('opt-system').classList.toggle('hidden', r.ok || r.minIdx > 2);
+      // Система контента показывается, только если первое слабое место 1, 2 или 3.
+      document.getElementById('opt-system').classList.toggle('hidden', r.ok || r.weak[0] > 2);
 
       sendResultsWebhook({
         instagram: state.instagram,
-        work: state.work,
-        weakPlace: r.ok ? null : PLACES[r.minIdx].name,
+        weakPlace: r.ok ? null : r.weak.map(i => PLACES[i].name).join(' + '),
         percents: PLACES.reduce((acc, p, i) => { acc[p.name] = r.pcts[i]; return acc; }, {}),
         utm_campaign: UTM_CAMPAIGN,
         utm_content: UTM_CONTENT,
@@ -682,9 +700,9 @@
     }
 
     document.getElementById('btn-restart').addEventListener('click', () => {
-      state.step = 1; state.instagram = ''; state.work = '';
+      state.step = 1; state.instagram = '';
       state.scores = PLACES.map(p => p.q.map(() => null));
-      instagramInput.value = ''; workInput.value = '';
+      instagramInput.value = '';
       screenResults.classList.add('hidden');
       screenIntro.classList.remove('hidden');
       screenIntro.classList.add('fade-in');
@@ -695,10 +713,10 @@
     function buildReportText() {
       const r = computeResult();
       let text = '📍 КАРТА ПУТИ КЛИЕНТА\n━━━━━━━━━━━━━━━━━━━━━━\n';
-      text += r.ok ? OK_RESULT.title + '\n' : PLACES[r.minIdx].weakTitle + '\n';
+      text += r.ok ? OK_RESULT.title + '\n' : (r.weak.length === 1 ? PLACES[r.weak[0]].weakTitle : 'Слабее всего два места: ' + r.weak.map(i => PLACES[i].name).join(' и ')) + '\n';
       text += '\nШесть мест пути:\n';
       PLACES.forEach((p, i) => { text += (i + 1) + '. ' + p.name + ': ' + r.pcts[i] + '%\n'; });
-      text += '\nНа этой неделе: ' + (r.ok ? OK_RESULT.action : PLACES[r.minIdx].action);
+      text += '\nНа этой неделе: ' + (r.ok ? OK_RESULT.action : r.weak.map(i => PLACES[i].action).join(' Потом: '));
       text += '\n\nКарта пути клиента · @infobiz_engineering';
       return text;
     }
